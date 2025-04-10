@@ -7,6 +7,22 @@ import endpoints from '../config/endpoints';
 import { environment } from '../config/endpoints';
 import { CartItem } from '../redux/slices/cartSlice';
 
+// Order interface
+export interface OrderData {
+  items: CartItem[];
+  customerInfo: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+  };
+  paymentInfo?: {
+    method: string;
+    cardNumber?: string;
+    expiryDate?: string;
+  };
+}
+
 /**
  * Service for handling cart-related operations
  */
@@ -155,6 +171,41 @@ export const cartService = {
     
     // Make API call in production or if mock is disabled
     const response = await api.delete<CartItem[]>(endpoints.cart.clear);
+    return response.data;
+  },
+
+  /**
+   * Places an order with the current cart items and customer information
+   */
+  placeOrder: async (orderData: OrderData): Promise<any> => {
+    // Use mock implementation in development or if mock is enabled
+    if (environment.enableMockApi) {
+      console.log('Placing order with mock implementation');
+      console.log('Order data:', orderData);
+      
+      try {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Clear cart after successful order
+        localStorage.setItem('cart', JSON.stringify([]));
+        
+        // Return mock order confirmation
+        return {
+          orderId: `ORD-${Date.now()}`,
+          status: 'confirmed',
+          estimatedDelivery: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+          items: orderData.items,
+          total: orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+        };
+      } catch (error) {
+        console.error('Error placing order with mock implementation:', error);
+        throw error;
+      }
+    }
+    
+    // Make API call in production or if mock is disabled
+    const response = await api.post<any>(endpoints.cart.placeOrder, orderData);
     return response.data;
   },
 };

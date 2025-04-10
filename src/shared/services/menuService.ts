@@ -2,13 +2,9 @@
  * Menu service for handling menu-related API calls
  */
 
-import api, { ApiResponse } from './api';
+import api from './api';
 import endpoints from '../config/endpoints';
-import { environment } from '../config/endpoints';
 import { MenuItem, MenuCategory } from '../redux/slices/menuSlice';
-
-// Mock data for development
-import menuData from '../../data/menu.json';
 
 // Types for API responses
 export interface MenuResponse {
@@ -16,45 +12,67 @@ export interface MenuResponse {
   categories: MenuCategory[];
 }
 
-// Helper function to flatten menu data
-const flattenMenuData = (menuData: any): MenuItem[] => {
-  if (!menuData || !menuData.menu) return [];
+// Helper function to transform API response to MenuItem format
+const transformMenuItems = (apiResponse: any[]): MenuItem[] => {
+  if (!apiResponse || !Array.isArray(apiResponse)) return [];
   
-  // Extract all menu items from different categories
-  const categories = Object.keys(menuData.menu);
-  const allItems: MenuItem[] = [];
-  
-  categories.forEach(category => {
-    const categoryItems = menuData.menu[category] || [];
-    categoryItems.forEach((item: any) => {
-      allItems.push({
-        ...item,
-        // Ensure all required fields are present
-        id: item.id || 0,
-        name: item.name || '',
-        description: item.description || '',
-        price: parseFloat(item.price) || 0,
-        image: item.image || '',
-        category: item.category || '',
-        available: item.available !== false, // Default to true if not specified
-        tags: item.tags || []
-      });
-    });
-  });
-  
-  return allItems;
+  return apiResponse.map(item => ({
+    id: parseInt(item.sku_id.replace('CHR', '')) || 0,
+    name: item.name || '',
+    description: item.description || item.product_description || '',
+    price: parseFloat(item.price?.replace('$', '')) || 0,
+    image: item.image || '',
+    category: item.level1_category || item.category || '',
+    available: item.is_enabled === 'true',
+    tags: extractTags(item)
+  }));
 };
 
-// Helper function to extract categories from menu data
-const extractCategories = (menuData: any): MenuCategory[] => {
-  if (!menuData || !menuData.menu) return [];
+// Helper function to extract tags from menu item
+const extractTags = (item: any): string[] => {
+  const tags: string[] = [];
   
-  // Create categories from the menu structure
-  return Object.keys(menuData.menu).map(category => ({
-    id: category,
-    name: category.charAt(0).toUpperCase() + category.slice(1), // Capitalize first letter
-    description: `${category.charAt(0).toUpperCase() + category.slice(1)} menu items`
-  }));
+  // Add subcategory as a tag if available
+  if (item.subCategory) {
+    tags.push(item.subCategory.toLowerCase());
+  }
+  
+  // Add dietary information as tags
+  if (item.dietary) {
+    if (item.dietary.isVegan) {
+      tags.push('vegan');
+      tags.push('vegetarian');
+    }
+  }
+  
+  // Add ingredients as tags if available
+  if (item.ingredients && Array.isArray(item.ingredients)) {
+    item.ingredients.forEach((ingredient: string) => {
+      if (ingredient && ingredient.trim() !== '') {
+        tags.push(ingredient.trim().toLowerCase());
+      }
+    });
+  }
+  
+  // Remove duplicates and return
+  return [...new Set(tags)];
+};
+
+// Helper function to extract categories from menu items
+const extractCategories = (menuItems: any[]): MenuCategory[] => {
+  if (!menuItems || !Array.isArray(menuItems)) return [];
+  
+  // Get unique categories
+  const uniqueCategories = [...new Set(menuItems.map(item => item.level1_category || item.category))];
+  
+  // Create category objects
+  return uniqueCategories
+    .filter(category => category) // Filter out undefined/null/empty categories
+    .map(category => ({
+      id: category.toLowerCase().replace(/\s+/g, '-'),
+      name: category,
+      description: `${category} menu items`
+    }));
 };
 
 /**
@@ -65,65 +83,17 @@ export const menuService = {
    * Fetches all menu items and categories
    */
   getMenu: async (): Promise<MenuResponse> => {
-    // Use mock data in development if enabled
-    if (environment.enableMockApi) {
-      console.log('Using mock menu data');
-      
-      // Process the menu data to match our expected format
-      const items = flattenMenuData(menuData);
-      const categories = extractCategories(menuData);
-      
-      return {
-        items,
-        categories
-      };
-    }
+    // Make API call to get menu data
+    const response = await api.get<any[]>(endpoints.menu.getAll);
     
-    // Make API call in production or if mock is disabled
-    const response = await api.get<MenuResponse>(endpoints.menu.getAll);
-    return response.data;
-  },
-
-  /**
-   * Fetches menu items by category
-   */
-  getMenuByCategory: async (category: string): Promise<MenuItem[]> => {
-    // Use mock data in development if enabled
-    if (environment.enableMockApi) {
-      console.log(`Using mock menu data for category: ${category}`);
-      
-      // Filter the mock data by category
-      const items = flattenMenuData(menuData);
-      return items.filter((item: MenuItem) => item.category === category);
-    }
+    // Process the menu data to match our expected format
+    const items = transformMenuItems(response.data);
+    const categories = extractCategories(response.data);
     
-    // Make API call in production or if mock is disabled
-    const response = await api.get<MenuItem[]>(endpoints.menu.getByCategory(category));
-    return response.data;
-  },
-
-  /**
-   * Fetches a menu item by ID
-   */
-  getMenuItem: async (id: string): Promise<MenuItem> => {
-    // Use mock data in development if enabled
-    if (environment.enableMockApi) {
-      console.log(`Using mock menu data for item: ${id}`);
-      
-      // Find the item by ID
-      const items = flattenMenuData(menuData);
-      const item = items.find((item: MenuItem) => item.id.toString() === id);
-      
-      if (!item) {
-        throw new Error(`Menu item with ID ${id} not found`);
-      }
-      
-      return item;
-    }
-    
-    // Make API call in production or if mock is disabled
-    const response = await api.get<MenuItem>(endpoints.menu.getById(id));
-    return response.data;
+    return {
+      items,
+      categories
+    };
   },
 };
 

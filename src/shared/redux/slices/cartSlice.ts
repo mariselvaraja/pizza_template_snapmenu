@@ -13,6 +13,7 @@ interface CartState {
   loading: boolean;
   error: string | null;
   drawerOpen: boolean;
+  orderPlaced: boolean;
 }
 
 const initialState: CartState = {
@@ -20,6 +21,7 @@ const initialState: CartState = {
   loading: false,
   error: null,
   drawerOpen: false,
+  orderPlaced: false,
 };
 
 export const cartSlice = createSlice({
@@ -81,6 +83,23 @@ export const cartSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    
+    // Place order actions
+    placeOrderRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+      state.orderPlaced = false;
+    },
+    placeOrderSuccess: (state) => {
+      state.loading = false;
+      state.orderPlaced = true;
+      state.items = []; // Clear cart after successful order
+    },
+    placeOrderFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.orderPlaced = false;
+    },
   },
 });
 
@@ -96,6 +115,9 @@ export const {
   saveCartRequest,
   saveCartSuccess,
   saveCartFailure,
+  placeOrderRequest,
+  placeOrderSuccess,
+  placeOrderFailure,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -1,48 +1,110 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
-import { useMenu, MenuItem } from '../context/MenuContext';
-import { useAppDispatch, addItem, CartItem } from '../shared/redux';
+import { useAppDispatch, useAppSelector, addItem, CartItem, fetchMenuRequest, MenuItem } from '../shared/redux';
+import { useEffect } from 'react';
 
 export default function ProductDetail() {
     const { productId } = useParams<{ productId: string }>();
     const navigate = useNavigate();
-    const { menuData } = useMenu();
     const dispatch = useAppDispatch();
-
-    // Function to generate a numeric hash from a string (same as in Menu.tsx)
-    const hashStringToNumber = (str: string): number => {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        return Math.abs(hash);
-    };
-
+    
+    // Get menu data from Redux store
+    const { items, loading, error } = useAppSelector(state => state.menu);
+    
+    // Fetch menu data when component mounts
+    useEffect(() => {
+        dispatch(fetchMenuRequest());
+    }, [dispatch]);
+    
     // Find the product in the menu data
-    const findProduct = (): MenuItem | undefined => {
-        for (const category in menuData.menu) {
-            const product = menuData.menu[category].find(item => item.id === productId);
-            if (product) return product;
-        }
-        return undefined;
-    };
-
-    const product = findProduct();
+    const product = items.find(item => item.id.toString() === productId);
 
     const handleAddToCart = (menuItem: MenuItem) => {
         const cartItem: CartItem = {
-            id: hashStringToNumber(menuItem.id),
+            id: menuItem.id, // ID is already a number
             name: menuItem.name,
-            price: parseFloat(menuItem.price),
+            price: menuItem.price, // Price is already a number
             image: menuItem.image,
             quantity: 1,
         };
         dispatch(addItem(cartItem));
     };
 
+    // Handle loading state
+    if (loading) {
+        return (
+            <div className="py-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Back button skeleton */}
+                    <div className="h-10 w-32 bg-gray-200 rounded-full animate-pulse mb-8"></div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        {/* Related Products skeleton on LHS */}
+                        <div className="md:col-span-1">
+                            <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
+                            <div className="space-y-4">
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                    <div key={i} className="bg-white rounded-lg overflow-hidden shadow-sm">
+                                        <div className="flex items-center p-2">
+                                            <div className="w-16 h-16 bg-gray-300 rounded-md mr-3 animate-pulse"></div>
+                                            <div>
+                                                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse mb-2"></div>
+                                                <div className="h-3 w-12 bg-gray-200 rounded animate-pulse"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Product Details skeleton on RHS */}
+                        <div className="md:col-span-3">
+                            {/* Product Header with Image on Right */}
+                            <div className="flex flex-col md:flex-row justify-between items-start mb-8">
+                                <div className="md:pr-8 md:w-1/2">
+                                    <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
+                                    <div className="h-6 w-24 bg-gray-200 rounded animate-pulse mb-4"></div>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        <div className="h-6 w-20 bg-gray-200 rounded-full animate-pulse"></div>
+                                        <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse"></div>
+                                    </div>
+                                    <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
+                                    <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
+                                    <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+                                </div>
+                                <div className="md:w-1/2 mt-4 md:mt-0">
+                                    <div className="w-full h-64 bg-gray-300 rounded-lg animate-pulse"></div>
+                                </div>
+                            </div>
+
+                            {/* Add to cart button skeleton */}
+                            <div className="w-full h-12 bg-gray-200 rounded-full animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    
+    // Handle error state
+    if (error) {
+        return (
+            <div className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 className="text-3xl font-bold mb-4">Error Loading Product</h1>
+                <p className="text-xl text-red-500">{error}</p>
+                <button 
+                    onClick={() => dispatch(fetchMenuRequest())}
+                    className="mt-4 inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Try Again
+                </button>
+            </div>
+        );
+    }
+    
+    // Handle product not found
     if (!product) {
         return (
             <div className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -79,9 +141,8 @@ export default function ProductDetail() {
                     >
                         <h2 className="text-xl font-semibold mb-4">Other Products</h2>
                         <div className="space-y-4">
-                            {Object.values(menuData.menu)
-                                .flat()
-                                .filter(item => item.id !== product.id)
+                            {items
+                                .filter(item => item.id.toString() !== productId)
                                 .slice(0, 5)
                                 .map(item => (
                                     <div 
@@ -90,11 +151,19 @@ export default function ProductDetail() {
                                         onClick={() => navigate(`/product/${item.id}`)}
                                     >
                                         <div className="flex items-center p-2">
-                                            <img 
-                                                src={item.image} 
-                                                alt={item.name} 
-                                                className="w-16 h-16 object-cover rounded-md mr-3"
-                                            />
+                                            {item.image ? (
+                                                <img 
+                                                    src={item.image} 
+                                                    alt={item.name} 
+                                                    className="w-16 h-16 object-cover rounded-md mr-3"
+                                                />
+                                            ) : (
+                                                <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-md mr-3">
+                                                    <span className="text-xl font-bold text-gray-500">
+                                                        {item.name.charAt(0).toUpperCase()}
+                                                    </span>
+                                                </div>
+                                            )}
                                             <div>
                                                 <h3 className="font-medium text-sm">{item.name}</h3>
                                                 <p className="text-red-500 text-xs">${item.price}</p>
@@ -119,17 +188,17 @@ export default function ProductDetail() {
                                 <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
                                 <div className="text-2xl font-bold text-red-500 mb-4">${product.price}</div>
                                 <div className="flex flex-wrap gap-2 mb-4">
-                                    {product.dietary?.isVegetarian && (
+                                    {product.tags && product.tags.includes('vegetarian') && (
                                         <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
                                             Vegetarian
                                         </div>
                                     )}
-                                    {product.dietary?.isVegan && (
+                                    {product.tags && product.tags.includes('vegan') && (
                                         <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
                                             Vegan
                                         </div>
                                     )}
-                                    {product.dietary?.isGlutenFree && (
+                                    {product.tags && product.tags.includes('gluten-free') && (
                                         <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
                                             GF
                                         </div>
@@ -139,48 +208,24 @@ export default function ProductDetail() {
                             </div>
                             <div className="md:w-1/2 mt-4 md:mt-0">
                                 <div className="relative rounded-lg overflow-hidden shadow-lg">
-                                    <img 
-                                        src={product.image} 
-                                        alt={product.name} 
-                                        className="w-full h-64 object-cover"
-                                    />
+                                    {product.image ? (
+                                        <img 
+                                            src={product.image} 
+                                            alt={product.name} 
+                                            className="w-full h-64 object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+                                            <span className="text-6xl font-bold text-gray-500">
+                                                {product.name.charAt(0).toUpperCase()}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mb-6">
-                            <h2 className="text-xl font-semibold mb-2">Nutritional Information</h2>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-gray-50 p-3 rounded">
-                                    <span className="font-medium">Calories:</span> {product.calories}
-                                </div>
-                                <div className="bg-gray-50 p-3 rounded">
-                                    <span className="font-medium">Protein:</span> {product.nutrients.protein}
-                                </div>
-                                <div className="bg-gray-50 p-3 rounded">
-                                    <span className="font-medium">Carbs:</span> {product.nutrients.carbs}
-                                </div>
-                                <div className="bg-gray-50 p-3 rounded">
-                                    <span className="font-medium">Fat:</span> {product.nutrients.fat}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mb-6">
-                            <h2 className="text-xl font-semibold mb-2">Allergens</h2>
-                            <div className="flex flex-wrap gap-2">
-                                {product.allergens.map((allergen, index) => (
-                                    <span key={index} className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
-                                        {allergen}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="mb-6">
-                            <h2 className="text-xl font-semibold mb-2">Ingredients</h2>
-                            <p className="text-gray-700">{product.ingredients.join(', ')}</p>
-                        </div>
+                        {/* Nutritional information section - removed as it's not in the Redux MenuItem type */}
 
                         <button
                             className="w-full inline-flex items-center justify-center bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-colors"
@@ -190,12 +235,7 @@ export default function ProductDetail() {
                             Add to Cart
                         </button>
 
-                        {product.pairings.length > 0 && (
-                            <div className="mt-8">
-                                <h2 className="text-xl font-semibold mb-2">Pairs Well With</h2>
-                                <div className="text-gray-700">{product.pairings.join(', ')}</div>
-                            </div>
-                        )}
+                        {/* Pairings section - removed as it's not in the Redux MenuItem type */}
                     </motion.div>
                 </div>
             </div>

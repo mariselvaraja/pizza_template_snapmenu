@@ -99,7 +99,8 @@ export const api = {
    * Makes a GET request to the specified URL
    */
   get: <T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
-    return request<T>(url, { ...options, method: 'GET' });
+    let headers : any = {restaurantId: "2256b9a6-5d53-4b77-b6a0-539043489ad3"}
+    return request<T>(url, { ...options, headers, method: 'GET' });
   },
 
   /**

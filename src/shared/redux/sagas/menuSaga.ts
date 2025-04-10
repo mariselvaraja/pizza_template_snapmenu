@@ -18,10 +18,18 @@ function* fetchMenuSaga(): Generator<any, void, any> {
   }
 }
 
-// Additional saga for fetching menu by category
+// Additional saga for filtering menu by category
 function* fetchMenuByCategorySaga(action: { type: string, payload: string }): Generator<any, void, any> {
   try {
-    const categoryItems = yield call(menuService.getMenuByCategory, action.payload);
+    // Get all menu data
+    const menuData = yield call(menuService.getMenu);
+    
+    // Filter items by category
+    const categoryItems = menuData.items.filter((item: { category: string }) => 
+      item.category.toLowerCase() === action.payload.toLowerCase()
+    );
+    
+    // Update the store with filtered items
     yield put(setMenuItems(categoryItems));
   } catch (error) {
     console.error('Error fetching menu by category:', error);

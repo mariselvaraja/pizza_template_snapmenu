@@ -9,10 +9,13 @@ import {
   addItem,
   removeItem,
   updateItemQuantity,
-  clearCart
+  clearCart,
+  placeOrderRequest,
+  placeOrderSuccess,
+  placeOrderFailure
 } from '../slices/cartSlice';
 import { RootState } from '../rootReducer';
-import { cartService } from '../../services';
+import { cartService, OrderData } from '../../services/cartService';
 
 // Worker Sagas
 function* fetchCartSaga(): Generator<any, void, any> {
@@ -81,6 +84,23 @@ function* clearCartSaga(): Generator<any, void, any> {
   }
 }
 
+function* placeOrderSaga(action: { type: string, payload: OrderData }): Generator<any, void, any> {
+  try {
+    // Place the order
+    const orderConfirmation = yield call(cartService.placeOrder, action.payload);
+    
+    // Dispatch success action
+    yield put(placeOrderSuccess());
+    
+    // Log order confirmation
+    console.log('Order placed successfully:', orderConfirmation);
+  } catch (error) {
+    // Dispatch failure action
+    yield put(placeOrderFailure(error instanceof Error ? error.message : 'An unknown error occurred'));
+    console.error('Error placing order:', error);
+  }
+}
+
 // Watcher Saga
 export function* cartSaga(): Generator<any, void, any> {
   yield takeLatest(fetchCartRequest.type, fetchCartSaga);
@@ -89,4 +109,5 @@ export function* cartSaga(): Generator<any, void, any> {
   yield takeLatest(removeItem.type, removeItemSaga);
   yield takeLatest(updateItemQuantity.type, updateItemQuantitySaga);
   yield takeLatest(clearCart.type, clearCartSaga);
+  yield takeLatest(placeOrderRequest.type, placeOrderSaga);
 }

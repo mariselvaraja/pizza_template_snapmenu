@@ -68,11 +68,21 @@ export default function CartDrawer() {
                 <ul className="divide-y">
                   {items.map((item) => (
                     <li key={item.id} className="p-4 flex">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded-lg mr-4"
-                      />
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-16 h-16 object-cover rounded-lg mr-4"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-lg mr-4">
+                          <span className="text-xl font-bold text-gray-500">
+                            {item.name && item.name.length > 0 
+                              ? item.name.charAt(0).toUpperCase() 
+                              : 'P'}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex-1">
                         <h3 className="font-semibold">{item.name}</h3>
                         <p className="text-gray-600">${item.price.toFixed(2)}</p>

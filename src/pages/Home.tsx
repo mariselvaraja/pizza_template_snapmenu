@@ -1,17 +1,23 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Star, Truck, Clock, Award, Pizza, Play, UtensilsCrossed, Heart, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 
-import { SiteContentContext, SiteContent } from '../context/SiteContentContext';
-import { MenuContext, MenuItem } from '../context/MenuContext';
+import { SiteContentContext } from '../context/SiteContentContext';
+import { useAppDispatch, useAppSelector, fetchMenuRequest } from '../shared/redux';
 
 export default function Home() {
   const [videoOpen, setVideoOpen] = useState(false);
   const siteContent = useContext(SiteContentContext);
-  const menuContext = useContext(MenuContext);
+  const dispatch = useAppDispatch();
+  const { items: menuItems, loading: menuLoading } = useAppSelector(state => state.menu);
   const heroData = siteContent?.hero;
   const currentBanner = heroData?.banners[0]; // Assuming you want to use the first banner for now
+  
+  // Fetch menu data when component mounts
+  useEffect(() => {
+    dispatch(fetchMenuRequest());
+  }, [dispatch]);
 
   return (
     <div>
@@ -188,54 +194,73 @@ export default function Home() {
             <h2 className="text-4xl font-bold mb-4">Featured Menu Items</h2>
             <p className="text-xl text-gray-600">Try our most popular creations</p>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              menuContext?.menuData.menu.mains?.[0] || {
-                name: "Wagyu Ribeye",
-                image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80",
-                price: "120",
-                description: "A5 grade Japanese Wagyu ribeye with roasted bone marrow and red wine reduction"
-              },
-              menuContext?.menuData.menu.mains?.[1] || {
-                name: "Pan-Seared Sea Bass",
-                image: "https://images.unsplash.com/photo-1534766555764-ce878a5e3a2b?auto=format&fit=crop&q=80",
-                price: "42",
-                description: "Mediterranean sea bass with saffron risotto and lemon butter sauce"
-              },
-              menuContext?.menuData.menu.mains?.[2] || {
-                name: "Black Truffle Risotto",
-                image: "https://images.unsplash.com/photo-1633964913295-ceb43826e7c1?auto=format&fit=crop&q=80",
-                price: "38",
-                description: "Creamy Arborio rice with black truffle, wild mushrooms, and aged Parmesan"
-              }
-            ].map((menuItem: any, index: number) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-                className="bg-white rounded-lg overflow-hidden shadow-lg"
-              >
-                <img
-                  src={menuItem.image}
-                  alt={menuItem.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{menuItem.name}</h3>
-                  <p className="text-gray-600 mb-4">{menuItem.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-red-500">${menuItem.price}</span>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                      ))}
+          
+          {menuLoading ? (
+            <div className="text-center py-8">
+              <p className="text-xl">Loading featured items...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {(menuItems.length >= 3 ? 
+                menuItems.filter(item => item.category === 'mains').slice(0, 3) : 
+                [
+                  {
+                    id: 1,
+                    name: "Wagyu Ribeye",
+                    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80",
+                    price: 120,
+                    description: "A5 grade Japanese Wagyu ribeye with roasted bone marrow and red wine reduction",
+                    category: "mains",
+                    available: true
+                  },
+                  {
+                    id: 2,
+                    name: "Pan-Seared Sea Bass",
+                    image: "https://images.unsplash.com/photo-1534766555764-ce878a5e3a2b?auto=format&fit=crop&q=80",
+                    price: 42,
+                    description: "Mediterranean sea bass with saffron risotto and lemon butter sauce",
+                    category: "mains",
+                    available: true
+                  },
+                  {
+                    id: 3,
+                    name: "Black Truffle Risotto",
+                    image: "https://images.unsplash.com/photo-1633964913295-ceb43826e7c1?auto=format&fit=crop&q=80",
+                    price: 38,
+                    description: "Creamy Arborio rice with black truffle, wild mushrooms, and aged Parmesan",
+                    category: "mains",
+                    available: true
+                  }
+                ]
+              ).map((menuItem, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                  className="bg-white rounded-lg overflow-hidden shadow-lg"
+                >
+                  <img
+                    src={menuItem.image}
+                    alt={menuItem.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold mb-2">{menuItem.name}</h3>
+                    <p className="text-gray-600 mb-4">{menuItem.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-bold text-red-500">${menuItem.price}</span>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

@@ -59,11 +59,19 @@ export default function Cart() {
                 <ul className="divide-y">
                   {cartItems.map((item) => (
                     <li key={item.id} className="p-6 flex items-center">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-20 h-20 object-cover rounded-lg mr-6"
-                      />
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-20 h-20 object-cover rounded-lg mr-6"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-gray-200 flex items-center justify-center rounded-lg mr-6">
+                          <span className="text-2xl font-bold text-gray-500">
+                            {item.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold">{item.name}</h3>
                         <p className="text-gray-600">${item.price.toFixed(2)}</p>
