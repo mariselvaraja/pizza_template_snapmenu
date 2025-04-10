@@ -14,3 +14,6 @@ export * from './siteContentService';
 
 export { default as cartService } from './cartService';
 export * from './cartService';
+
+export { default as searchService } from './searchService';
+export * from './searchService';

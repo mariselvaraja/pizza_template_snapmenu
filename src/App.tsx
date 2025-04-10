@@ -18,6 +18,7 @@ import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import { MenuProvider } from './context/MenuContext';
 import { SiteContentProvider } from './context/SiteContentContext';
+import { SearchInitializer } from './shared';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <MenuProvider>
         <Router>
           <div className="min-h-screen flex flex-col">
+            <SearchInitializer />
             <Navbar />
             <CartDrawer />
             <main className="flex-grow pt-20">

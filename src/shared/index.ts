@@ -11,3 +11,9 @@ export * from './services';
 
 // Export Redux
 export * from './redux';
+
+// Export components
+export * from './components/search';
+
+// Export hooks
+export * from './hooks';

@@ -4,6 +4,8 @@ import { Menu, X, ShoppingCart, Search } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
 import { Utensils, Pizza } from 'lucide-react';
 import { useAppSelector, useAppDispatch, toggleDrawer } from '../shared/redux';
+import { openSearchModal, closeSearchModal } from '../shared/redux/slices/searchSlice';
+import { SearchModal } from '../shared/components/search';
 
 const UtensilsIcon = Utensils;
 const PizzaIcon = Pizza;
@@ -12,6 +14,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { brand, navigation } = useSiteContent();
   const cartItems = useAppSelector((state) => state.cart.items);
+  const isSearchModalOpen = useAppSelector((state) => state.search.isModalOpen);
   const dispatch = useAppDispatch();
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
@@ -51,6 +54,7 @@ export default function Navbar() {
                 Order Now
               </Link>
               <button
+                onClick={() => dispatch(openSearchModal())}
                 className="hover:text-red-500 transition-colors"
               >
                 <Search className="h-6 w-6" />
@@ -104,7 +108,10 @@ export default function Navbar() {
               Order Now
             </Link>
             <div className="flex justify-center mt-4 space-x-4">
-              <button className="p-2">
+              <button 
+                onClick={() => dispatch(openSearchModal())}
+                className="p-2"
+              >
                 <Search className="h-6 w-6" />
               </button>
               <button
@@ -120,6 +127,12 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      {/* Search Modal */}
+      <SearchModal 
+        isOpen={isSearchModalOpen} 
+        onClose={() => dispatch(closeSearchModal())} 
+      />
     </nav>
   );
 }
