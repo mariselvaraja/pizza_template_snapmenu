@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
 import { Utensils, Pizza } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { useAppSelector, useAppDispatch, toggleDrawer } from '../shared/redux';
 
 const UtensilsIcon = Utensils;
 const PizzaIcon = Pizza;
@@ -12,7 +11,8 @@ const PizzaIcon = Pizza;
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { brand, navigation } = useSiteContent();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const dispatch = useAppDispatch();
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
@@ -50,15 +50,15 @@ export default function Navbar() {
               >
                 Order Now
               </Link>
-              <Link
-                to="/cart"
+              <button
+                onClick={() => dispatch(toggleDrawer())}
                 className="relative hover:text-red-500 transition-colors"
               >
                 <ShoppingCart className="h-6 w-6" />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cartItemCount}
                 </span>
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -99,15 +99,15 @@ export default function Navbar() {
               Order Now
             </Link>
             <div className="flex justify-center mt-4">
-              <Link
-                to="/cart"
+              <button
+                onClick={() => dispatch(toggleDrawer())}
                 className="relative p-2"
               >
                 <ShoppingCart className="h-6 w-6" />
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cartItemCount}
                 </span>
-              </Link>
+              </button>
             </div>
           </div>
         </div>

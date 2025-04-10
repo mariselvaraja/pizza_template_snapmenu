@@ -12,12 +12,14 @@ interface CartState {
   items: CartItem[];
   loading: boolean;
   error: string | null;
+  drawerOpen: boolean;
 }
 
 const initialState: CartState = {
   items: [],
   loading: false,
   error: null,
+  drawerOpen: false,
 };
 
 export const cartSlice = createSlice({
@@ -34,6 +36,8 @@ export const cartSlice = createSlice({
       } else {
         state.items.push(newItem);
       }
+      // Open drawer when item is added
+      state.drawerOpen = true;
     },
     removeItem: (state, action: PayloadAction<number>) => {
       state.items = state.items.filter(item => item.id !== action.payload);
@@ -47,6 +51,9 @@ export const cartSlice = createSlice({
     },
     clearCart: (state) => {
       state.items = [];
+    },
+    toggleDrawer: (state, action: PayloadAction<boolean | undefined>) => {
+      state.drawerOpen = action.payload !== undefined ? action.payload : !state.drawerOpen;
     },
     
     // Async action triggers for sagas
@@ -82,6 +89,7 @@ export const {
   removeItem,
   updateItemQuantity,
   clearCart,
+  toggleDrawer,
   fetchCartRequest,
   fetchCartSuccess,
   fetchCartFailure,
