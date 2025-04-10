@@ -1,11 +1,7 @@
-import { configureStore } from '@reduxjs/toolkit';
-import cartReducer from './cartSlice';
+import { configureAppStore } from './shared/redux';
 
-export const store = configureStore({
-  reducer: {
-    cart: cartReducer,
-  },
-});
+// Create the Redux store
+export const store = configureAppStore();
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+// Re-export types from the shared redux module
+export type { RootState, AppDispatch } from './shared/redux';

@@ -1,17 +1,15 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useMenu, MenuItem, CategoryType, SubCategoryType } from '../context/MenuContext';
-import { useDispatch } from 'react-redux';
-import { addItem, CartItem } from '../cartSlice';
+import { useAppDispatch, addItem, CartItem } from '../shared/redux';
 
 export default function Menu() {
     const [selectedType, setSelectedType] = useState<string>('all');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [sortBy, setSortBy] = useState<string>('featured');
     const { menuData, categories, subCategories } = useMenu();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     // Function to generate a numeric hash from a string
     const hashStringToNumber = (str: string): number => {

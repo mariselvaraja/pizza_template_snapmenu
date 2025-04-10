@@ -1,13 +1,11 @@
 import { motion } from 'framer-motion';
 import { Trash2, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store';
-import { removeItem, updateItemQuantity } from '../cartSlice';
+import { useAppSelector, useAppDispatch, removeItem, updateItemQuantity } from '../shared/redux';
 
 export default function Cart() {
-  const cartItems = useSelector((state: RootState) => state.cart.items);
-  const dispatch = useDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const dispatch = useAppDispatch();
 
   // Calculate cart totals
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
