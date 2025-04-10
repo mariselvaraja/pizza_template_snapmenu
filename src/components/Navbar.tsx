@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart, Search } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
 import { Utensils, Pizza } from 'lucide-react';
 import { useAppSelector, useAppDispatch, toggleDrawer } from '../shared/redux';
@@ -51,6 +51,11 @@ export default function Navbar() {
                 Order Now
               </Link>
               <button
+                className="hover:text-red-500 transition-colors"
+              >
+                <Search className="h-6 w-6" />
+              </button>
+              <button
                 onClick={() => dispatch(toggleDrawer())}
                 className="relative hover:text-red-500 transition-colors"
               >
@@ -98,7 +103,10 @@ export default function Navbar() {
             >
               Order Now
             </Link>
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4 space-x-4">
+              <button className="p-2">
+                <Search className="h-6 w-6" />
+              </button>
               <button
                 onClick={() => dispatch(toggleDrawer())}
                 className="relative p-2"
