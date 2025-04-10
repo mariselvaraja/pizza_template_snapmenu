@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useMenu, MenuItem, CategoryType, SubCategoryType } from '../context/MenuContext';
 import { useAppDispatch, addItem, CartItem } from '../shared/redux';
 
@@ -10,6 +11,7 @@ export default function Menu() {
     const [sortBy, setSortBy] = useState<string>('featured');
     const { menuData, categories, subCategories } = useMenu();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     // Function to generate a numeric hash from a string
     const hashStringToNumber = (str: string): number => {
@@ -116,7 +118,7 @@ export default function Menu() {
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                             className="bg-white rounded-lg overflow-hidden shadow-lg"
                         >
-                            <div className="relative">
+                            <div className="relative cursor-pointer" onClick={() => navigate(`/product/${item.id}`)}>
                                 <img
                                     src={item.image}
                                     alt={item.name}
@@ -142,10 +144,26 @@ export default function Menu() {
                             </div>
                             <div className="p-6">
                                 <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-xl font-semibold">{item.name}</h3>
+                                    <h3 
+                                        className="text-xl font-semibold cursor-pointer hover:text-red-500 transition-colors"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/product/${item.id}`);
+                                        }}
+                                    >
+                                        {item.name}
+                                    </h3>
                                     <span className="text-lg font-bold text-red-500">${item.price}</span>
                                 </div>
-                                <p className="text-gray-600 mb-4">{item.description}</p>
+                                <p 
+                                    className="text-gray-600 mb-4 line-clamp-2 cursor-pointer hover:text-gray-800 transition-colors"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/product/${item.id}`);
+                                    }}
+                                >
+                                    {item.description}
+                                </p>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         {/* Removed rating stars as menu.json does not have rating */}

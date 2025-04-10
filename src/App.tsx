@@ -14,6 +14,7 @@ import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import Reservation from './pages/Reservation';
 import Cart from './pages/Cart';
+import ProductDetail from './pages/ProductDetail';
 import { MenuProvider } from './context/MenuContext';
 import { SiteContentProvider } from './context/SiteContentContext';
 
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/blog/:id" element={<BlogPost />} />
                 <Route path="/reservation" element={<Reservation />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/product/:productId" element={<ProductDetail />} />
               </Routes>
             </main>
             <Footer />

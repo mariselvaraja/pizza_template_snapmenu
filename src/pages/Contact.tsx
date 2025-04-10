@@ -36,6 +36,7 @@ export default function Contact() {
                 <input
                   type="text"
                   id="name"
+                  placeholder={contact.form.placeholders.firstName}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                 />
               </div>
@@ -46,6 +47,18 @@ export default function Contact() {
                 <input
                   type="email"
                   id="email"
+                  placeholder={contact.form.placeholders.email}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  {contact.form.labels.phone}
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  placeholder={contact.form.placeholders.phone}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                 />
               </div>
@@ -56,6 +69,7 @@ export default function Contact() {
                 <textarea
                   id="message"
                   rows={4}
+                  placeholder={contact.form.placeholders.message}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                 ></textarea>
               </div>
