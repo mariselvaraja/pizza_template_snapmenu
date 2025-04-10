@@ -12,7 +12,8 @@ const PizzaIcon = Pizza;
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { brand, navigation } = useSiteContent();
+  const { navigationBar } = useSiteContent();
+  const { brand, navigation } = navigationBar;
   const cartItems = useAppSelector((state) => state.cart.items);
   const isSearchModalOpen = useAppSelector((state) => state.search.isModalOpen);
   const dispatch = useAppDispatch();

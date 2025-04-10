@@ -7,9 +7,6 @@ import endpoints from '../config/endpoints';
 import { environment } from '../config/endpoints';
 import { SiteContent } from '../redux/slices/siteContentSlice';
 
-// Mock data for development
-import siteContentData from '../../data/siteContent.json';
-
 /**
  * Service for handling site content-related operations
  */
@@ -18,12 +15,12 @@ export const siteContentService = {
    * Fetches all site content
    */
   getSiteContent: async (): Promise<SiteContent> => {
-    // Use mock data in development if enabled
-    if (environment.enableMockApi) {
-      console.log('Using mock site content data');
+    try {
+      // Make API call to get site content data
+      const response = await api.get<any>(endpoints.siteContent.getAll);
       
-      // Transform the site content data to match our expected format
-      const data = siteContentData as any;
+      // Process the API response to match our expected format
+      const data = response.data;
       
       // Create a properly structured SiteContent object
       const transformedData: SiteContent = {
@@ -91,34 +88,24 @@ export const siteContentService = {
       };
       
       return transformedData;
+    } catch (error) {
+      console.error('Error fetching site content:', error);
+      throw error;
     }
-    
-    // Make API call in production or if mock is disabled
-    const response = await api.get<SiteContent>(endpoints.siteContent.getAll);
-    return response.data;
   },
 
   /**
    * Fetches a specific section of the site content
    */
   getSiteContentSection: async (section: string): Promise<any> => {
-    // Use mock data in development if enabled
-    if (environment.enableMockApi) {
-      console.log(`Using mock site content data for section: ${section}`);
-      
-      // Get the specific section from the mock data
-      const sectionData = (siteContentData as any)[section];
-      
-      if (!sectionData) {
-        throw new Error(`Site content section '${section}' not found`);
-      }
-      
-      return sectionData;
+    try {
+      // Make API call to get the specific section
+      const response = await api.get<any>(endpoints.siteContent.getSection(section));
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching site content section ${section}:`, error);
+      throw error;
     }
-    
-    // Make API call in production or if mock is disabled
-    const response = await api.get<any>(endpoints.siteContent.getSection(section));
-    return response.data;
   },
 };
 

@@ -3,7 +3,35 @@ import { Link } from 'react-router-dom';
 import { useSiteContent } from '../context/SiteContentContext';
 
 export default function Footer() {
-  const { brand, footer, navigation } = useSiteContent();
+  const siteContent = useSiteContent();
+  const { navigationBar } = siteContent;
+  const { brand, navigation } = navigationBar;
+  const footer = siteContent?.footer || {
+    newsletter: {
+      title: "Subscribe to our newsletter",
+      description: "Stay updated with our latest news and offers"
+    },
+    servicesSection: {
+      title: "Our Services",
+      links: [
+        { label: "Dine In", url: "/menu" },
+        { label: "Takeout", url: "/order" },
+        { label: "Delivery", url: "/order" },
+        { label: "Catering", url: "/contact" },
+        { label: "Private Events", url: "/events" }
+      ]
+    },
+    copyright: {
+      text: "© 2025 Chris Restaurant. All rights reserved."
+    },
+    social: {
+      links: [
+        { icon: "Facebook", url: "https://facebook.com" },
+        { icon: "Instagram", url: "https://instagram.com" },
+        { icon: "Twitter", url: "https://twitter.com" }
+      ]
+    }
+  };
 
   return (
     <footer className="bg-gray-900 text-white py-12">

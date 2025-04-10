@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
+import TitleUpdater from './components/TitleUpdater';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import Locations from './pages/Locations';
@@ -25,6 +26,7 @@ function App() {
       <Router>
         <div className="min-h-screen flex flex-col">
           <SearchInitializer />
+          <TitleUpdater />
           <Navbar />
           <CartDrawer />
           <main className="flex-grow pt-20">

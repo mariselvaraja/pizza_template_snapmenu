@@ -25,7 +25,51 @@ const categories = [
 ];
 
 export default function Blog() {
-  const { blog } = useSiteContent();
+  const siteContent = useSiteContent();
+  const blog = siteContent?.blog || {
+    header: {
+      title: "Our Blog",
+      description: "Culinary insights, recipes, and stories from our kitchen"
+    },
+    posts: [
+      {
+        id: "1",
+        title: "The Art of Perfect Pizza",
+        subtitle: "Secrets from our master chef",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl.",
+        image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80",
+        videoThumbnail: "",
+        videoUrl: "",
+        chef: "Marco Rossi",
+        date: "2025-04-01",
+        readTime: "5 min"
+      },
+      {
+        id: "2",
+        title: "Seasonal Ingredients: Spring Edition",
+        subtitle: "Fresh flavors for your table",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl.",
+        image: "https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?auto=format&fit=crop&q=80",
+        videoThumbnail: "",
+        videoUrl: "",
+        chef: "Sophia Chen",
+        date: "2025-03-15",
+        readTime: "4 min"
+      },
+      {
+        id: "3",
+        title: "Wine Pairing Fundamentals",
+        subtitle: "Elevate your dining experience",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl.",
+        image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80",
+        videoThumbnail: "",
+        videoUrl: "",
+        chef: "Jean Dupont",
+        date: "2025-02-28",
+        readTime: "6 min"
+      }
+    ]
+  };
   
   // Transform blog data from siteContent to match the format expected by the component
   const blogPosts: BlogPost[] = blog.posts.map(post => ({

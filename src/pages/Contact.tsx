@@ -3,7 +3,79 @@ import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
 
 export default function Contact() {
-  const { contact } = useSiteContent();
+  const siteContent = useSiteContent();
+  const contact = siteContent?.contact || {
+    header: {
+      title: "Contact Us",
+      subtitle: "We'd love to hear from you"
+    },
+    infoCards: {
+      phone: {
+        title: "Phone",
+        numbers: ["(212) 555-1234"],
+        hours: "Available 7 days a week, 9am-10pm"
+      },
+      email: {
+        title: "Email",
+        addresses: ["info@chrisrestaurant.com"],
+        support: "We'll respond as soon as possible"
+      },
+      address: {
+        title: "Location",
+        street: "123 Main Street",
+        city: "New York",
+        state: "NY",
+        zip: "10001",
+        label: "Downtown"
+      },
+      hours: {
+        title: "Hours",
+        weekday: "Mon-Thu: 5pm-10pm",
+        weekend: "Fri-Sat: 5pm-11pm",
+        note: "Closed on major holidays"
+      }
+    },
+    form: {
+      title: "Send Us a Message",
+      description: "Have a question or feedback? Fill out the form below and we'll get back to you.",
+      labels: {
+        firstName: "First Name",
+        lastName: "Last Name",
+        email: "Email",
+        phone: "Phone",
+        subject: "Subject",
+        message: "Message",
+        submitButton: "Send Message"
+      },
+      placeholders: {
+        firstName: "Your first name",
+        lastName: "Your last name",
+        email: "your@email.com",
+        phone: "(123) 456-7890",
+        subject: "What is this regarding?",
+        message: "Your message here..."
+      }
+    },
+    callToAction: {
+      call: {
+        title: "Call Us",
+        phone: "(212) 555-1234"
+      },
+      email: {
+        title: "Email Us",
+        address: "info@chrisrestaurant.com"
+      },
+      visit: {
+        title: "Visit Us",
+        address: "123 Main St, New York, NY 10001"
+      }
+    },
+    location: {
+      title: "Find Us",
+      description: "Located in the heart of downtown",
+      mapEnabled: true
+    }
+  };
   return (
     <div className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

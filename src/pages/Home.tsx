@@ -11,7 +11,7 @@ export default function Home() {
   const siteContent = useContext(SiteContentContext);
   const dispatch = useAppDispatch();
   const { items: menuItems, loading: menuLoading } = useAppSelector(state => state.menu);
-  const heroData = siteContent?.hero;
+  const heroData = siteContent?.navigationBar?.hero;
   const currentBanner = heroData?.banners[0]; // Assuming you want to use the first banner for now
   
   // Fetch menu data when component mounts
