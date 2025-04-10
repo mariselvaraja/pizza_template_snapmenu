@@ -15,6 +15,7 @@ import BlogPost from './pages/BlogPost';
 import Reservation from './pages/Reservation';
 import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
+import Checkout from './pages/Checkout';
 import { MenuProvider } from './context/MenuContext';
 import { SiteContentProvider } from './context/SiteContentContext';
 
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/reservation" element={<Reservation />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/product/:productId" element={<ProductDetail />} />
+                <Route path="/checkout" element={<Checkout />} />
               </Routes>
             </main>
             <Footer />

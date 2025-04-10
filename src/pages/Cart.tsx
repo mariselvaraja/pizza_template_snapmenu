@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
 import { Trash2, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch, removeItem, updateItemQuantity } from '../shared/redux';
 
 export default function Cart() {
   const cartItems = useAppSelector((state) => state.cart.items);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   // Calculate cart totals
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -121,7 +122,10 @@ export default function Cart() {
                     <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
-                <button className="w-full bg-red-500 text-white py-3 rounded-full font-semibold hover:bg-red-600 transition-colors mt-6">
+                <button 
+                  onClick={() => navigate('/checkout')}
+                  className="w-full bg-red-500 text-white py-3 rounded-full font-semibold hover:bg-red-600 transition-colors mt-6"
+                >
                   Proceed to Checkout
                 </button>
                 <p className="text-sm text-gray-500 text-center mt-4">
