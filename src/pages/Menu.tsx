@@ -225,7 +225,9 @@ export default function Menu() {
                                 ) : (
                                     <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
                                         <span className="text-6xl font-bold text-gray-500">
-                                            {item.name.charAt(0).toUpperCase()}
+                                            {item.name && item.name.length > 0 
+                                              ? item.name.charAt(0).toUpperCase() 
+                                              : 'P'}
                                         </span>
                                     </div>
                                 )}

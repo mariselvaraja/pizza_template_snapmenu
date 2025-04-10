@@ -68,7 +68,9 @@ export default function Cart() {
                       ) : (
                         <div className="w-20 h-20 bg-gray-200 flex items-center justify-center rounded-lg mr-6">
                           <span className="text-2xl font-bold text-gray-500">
-                            {item.name.charAt(0).toUpperCase()}
+                            {item.name && item.name.length > 0 
+                              ? item.name.charAt(0).toUpperCase() 
+                              : 'P'}
                           </span>
                         </div>
                       )}
