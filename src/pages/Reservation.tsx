@@ -1,228 +1,41 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Calendar, Clock, Users, Phone, Mail } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
+import { TableReservation, BookingData } from '../shared/components/reservation';
 
 export default function Reservation() {
   const { reservation } = useSiteContent();
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [guests, setGuests] = useState('2');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedTime, setSelectedTime] = useState(new Date().toTimeString().slice(0, 5));
+
+  const handleBookingComplete = (bookingData: BookingData): void => {
+    // Handle booking logic here
+    alert(`Table ${bookingData.tableId} booked for ${bookingData.date} at ${bookingData.time}`);
+    // In a real application, you would send this data to your backend
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(e.target.value);
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedTime(e.target.value);
+  };
 
   return (
-    <div className="py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-4xl font-bold mb-4">{reservation.header.title}</h1>
-          <p className="text-xl text-gray-600">
-            {reservation.header.description}
-          </p>
-        </motion.div>
+    <div className="">
+      <div className="max-w-full mx-auto px-4 ">
+        {/* Date and Time inputs are now moved to the TableReservation component */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Reservation Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-lg shadow-lg p-8"
-          >
-            <h2 className="text-2xl font-semibold mb-6">Reservation Details</h2>
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {reservation.form.labels.date}
-                  </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {reservation.form.labels.time}
-                  </label>
-                  <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <select
-                      value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                    >
-                      <option value="">Select time</option>
-                      <option value="11:00">11:00 AM</option>
-                      <option value="12:00">12:00 PM</option>
-                      <option value="13:00">1:00 PM</option>
-                      <option value="14:00">2:00 PM</option>
-                      <option value="15:00">3:00 PM</option>
-                      <option value="16:00">4:00 PM</option>
-                      <option value="17:00">5:00 PM</option>
-                      <option value="18:00">6:00 PM</option>
-                      <option value="19:00">7:00 PM</option>
-                      <option value="20:00">8:00 PM</option>
-                      <option value="21:00">9:00 PM</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+        {/* Table Reservation Component */}
+        <TableReservation 
+          onBookingComplete={handleBookingComplete}
+          initialDate={selectedDate}
+          initialTime={selectedTime}
+          reservationContent={reservation}
+        />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {reservation.form.labels.guests}
-                </label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <select
-                    value={guests}
-                    onChange={(e) => setGuests(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  >
-                    {[...Array(10)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>
-                        {i + 1} {i === 0 ? 'Guest' : 'Guests'}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {reservation.form.labels.name}
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {reservation.form.labels.phone}
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <input
-                      type="tel"
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {reservation.form.labels.email}
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    type="email"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {reservation.form.labels.specialRequests}
-                </label>
-                <textarea
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  placeholder={reservation.form.placeholders.specialRequests}
-                ></textarea>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-red-500 text-white py-3 rounded-full font-semibold hover:bg-red-600 transition-colors"
-              >
-                Book Table
-              </button>
-            </form>
-          </motion.div>
-
-          {/* Information Section */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-8"
-          >
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">Reservation Information</h2>
-              <div className="prose prose-lg">
-                <p className="text-gray-600">
-                  We're excited to host you at Pizza Planet! Please note the following:
-                </p>
-                <ul className="space-y-4 mt-4">
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">•</span>
-                    Reservations are recommended for parties of all sizes
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">•</span>
-                    For parties larger than 10, please call us directly
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">•</span>
-                    We hold reservations for 15 minutes past the booking time
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">•</span>
-                    Special requests are accommodated based on availability
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="bg-gray-100 rounded-lg p-8">
-              <h3 className="text-xl font-semibold mb-4">Hours of Operation</h3>
-              <div className="space-y-2">
-                <p className="flex justify-between">
-                  <span>{reservation.info.hours.weekdays.label}:</span>
-                  <span>{reservation.info.hours.weekdays.time}</span>
-                </p>
-                <p className="flex justify-between">
-                  <span>{reservation.info.hours.weekends.label}:</span>
-                  <span>{reservation.info.hours.weekends.time}</span>
-                </p>
-                <p className="flex justify-between">
-                  <span>{reservation.info.hours.sunday.label}:</span>
-                  <span>{reservation.info.hours.sunday.time}</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-gray-100 rounded-lg p-8">
-              <h3 className="text-xl font-semibold mb-4">Private Events</h3>
-              <p className="text-gray-600 mb-4">
-                Looking to host a private event? We offer special packages for:
-              </p>
-              <ul className="space-y-2">
-                <li>• Birthday Parties</li>
-                <li>• Corporate Events</li>
-                <li>• Wedding Rehearsals</li>
-                <li>• Special Celebrations</li>
-              </ul>
-              <button className="mt-6 w-full bg-red-500 text-white py-3 rounded-full font-semibold hover:bg-red-600 transition-colors">
-                Inquire About Private Events
-              </button>
-            </div>
-          </motion.div>
-        </div>
+        {/* Additional content can be added here if needed */}
       </div>
     </div>
   );
