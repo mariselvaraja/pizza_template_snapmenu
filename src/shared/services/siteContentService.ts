@@ -1,10 +1,10 @@
 /**
  * Site content service for handling site content-related API calls
+ * This service transforms API data to match our application's data model
  */
 
-import api, { ApiResponse } from './api';
+import api from './api';
 import endpoints from '../config/endpoints';
-import { environment } from '../config/endpoints';
 import { SiteContent } from '../redux/slices/siteContentSlice';
 
 /**
@@ -12,15 +12,21 @@ import { SiteContent } from '../redux/slices/siteContentSlice';
  */
 export const siteContentService = {
   /**
-   * Fetches all site content
+   * Fetches all site content and transforms it to match our SiteContent interface
    */
   getSiteContent: async (): Promise<SiteContent> => {
     try {
       // Make API call to get site content data
       const response = await api.get<any>(endpoints.siteContent.getAll);
       
-      // Process the API response to match our expected format
+      // Log the raw API response for debugging
+      console.log('SiteContentService: Raw API response', response);
+      
+      // Extract the data from the response
       const data = response.data;
+      
+      // Log the extracted data before transformation
+      console.log('SiteContentService: API response data', data);
       
       // Create a properly structured SiteContent object
       const transformedData: SiteContent = {
@@ -30,7 +36,7 @@ export const siteContentService = {
             name: value.title || '',
             role: value.icon || '',
             bio: value.description || '',
-            image: ''  // Default empty as it's not in the source data
+            image: value.image || ''
           })) || []
         },
         gallery: data.gallery?.images?.map((image: any, index: number) => ({
@@ -58,34 +64,45 @@ export const siteContentService = {
         reservation: {
           title: data.reservation?.header?.title || '',
           description: data.reservation?.header?.description || '',
-          image: ''  // Default empty as it's not in the source data
+          image: data.reservation?.header?.image || ''
         },
         contact: {
-          address: data.contact?.infoCards?.address?.street + ', ' + 
-                  data.contact?.infoCards?.address?.city + ', ' + 
-                  data.contact?.infoCards?.address?.state || '',
+          address: data.contact?.infoCards?.address ? [
+            data.contact.infoCards.address.street,
+            data.contact.infoCards.address.city,
+            data.contact.infoCards.address.state
+          ].filter(Boolean).join(', ') : '',
           phone: data.contact?.infoCards?.phone?.numbers?.[0] || '',
           email: data.contact?.infoCards?.email?.addresses?.[0] || '',
-          hours: data.contact?.infoCards?.hours?.weekday + '; ' + 
-                data.contact?.infoCards?.hours?.weekend || '',
-          image: ''  // Default empty as it's not in the source data
+          hours: data.contact?.infoCards?.hours ? [
+            data.contact.infoCards.hours.weekday,
+            data.contact.infoCards.hours.weekend
+          ].filter(Boolean).join('; ') : '',
+          image: data.contact?.header?.image || ''
         },
-        locations: [{
+        locations: data.contact?.infoCards?.address ? [{
           id: 1,
-          name: data.contact?.infoCards?.address?.label || 'Main Location',
-          address: data.contact?.infoCards?.address?.street + ', ' + 
-                  data.contact?.infoCards?.address?.city + ', ' + 
-                  data.contact?.infoCards?.address?.state || '',
-          phone: data.contact?.infoCards?.phone?.numbers?.[0] || '',
-          hours: data.contact?.infoCards?.hours?.weekday + '; ' + 
-                data.contact?.infoCards?.hours?.weekend || '',
-          image: '',  // Default empty as it's not in the source data
+          name: data.contact.infoCards.address.label || 'Main Location',
+          address: [
+            data.contact.infoCards.address.street,
+            data.contact.infoCards.address.city,
+            data.contact.infoCards.address.state
+          ].filter(Boolean).join(', '),
+          phone: data.contact.infoCards.phone?.numbers?.[0] || '',
+          hours: [
+            data.contact.infoCards.hours?.weekday,
+            data.contact.infoCards.hours?.weekend
+          ].filter(Boolean).join('; '),
+          image: '',
           coordinates: {
             lat: 40.7128,  // Default to NYC coordinates
             lng: -74.0060
           }
-        }]
+        }] : []
       };
+      
+      // Log the transformed data for debugging
+      console.log('SiteContentService: Transformed data', transformedData);
       
       return transformedData;
     } catch (error) {
@@ -101,6 +118,11 @@ export const siteContentService = {
     try {
       // Make API call to get the specific section
       const response = await api.get<any>(endpoints.siteContent.getSection(section));
+      
+      // Log the section API response for debugging
+      console.log(`SiteContentService: Raw API response for section "${section}"`, response);
+      console.log(`SiteContentService: API response data for section "${section}"`, response.data);
+      
       return response.data;
     } catch (error) {
       console.error(`Error fetching site content section ${section}:`, error);

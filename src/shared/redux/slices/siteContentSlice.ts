@@ -60,12 +60,14 @@ export interface SiteContent {
 
 interface SiteContentState {
   content: SiteContent | null;
+  rawApiResponse: any | null; // Store the raw API response
   loading: boolean;
   error: string | null;
 }
 
 const initialState: SiteContentState = {
   content: null,
+  rawApiResponse: null,
   loading: false,
   error: null,
 };
@@ -84,8 +86,9 @@ export const siteContentSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchSiteContentSuccess: (state, action: PayloadAction<SiteContent>) => {
-      state.content = action.payload;
+    fetchSiteContentSuccess: (state, action: PayloadAction<{transformedData: SiteContent, rawApiResponse: any}>) => {
+      state.content = action.payload.transformedData;
+      state.rawApiResponse = action.payload.rawApiResponse;
       state.loading = false;
     },
     fetchSiteContentFailure: (state, action: PayloadAction<string>) => {

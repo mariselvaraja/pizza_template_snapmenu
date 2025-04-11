@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, Truck, Clock, Award, Pizza, Play, UtensilsCrossed, Heart, Users } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Truck, Clock, Award, Pizza, Play, UtensilsCrossed, Heart, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useContext, useEffect } from 'react';
 
 import { SiteContentContext } from '../context/SiteContentContext';
-import { useAppDispatch, useAppSelector, fetchMenuRequest } from '../shared/redux';
+import { useAppDispatch, useAppSelector, fetchMenuRequest, addItem, CartItem } from '../shared/redux';
 
 export default function Home() {
   const [videoOpen, setVideoOpen] = useState(false);
@@ -202,7 +202,7 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {(menuItems.length >= 3 ? 
-                menuItems.filter(item => item.category === 'mains').slice(0, 3) : 
+                menuItems.slice(0, 3) : 
                 [
                   {
                     id: 1,
@@ -240,23 +240,43 @@ export default function Home() {
                   transition={{ duration: 0.5, delay: index * 0.2 }}
                   className="bg-white rounded-lg overflow-hidden shadow-lg"
                 >
-                  <img
-                    src={menuItem.image}
-                    alt={menuItem.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">{menuItem.name}</h3>
-                    <p className="text-gray-600 mb-4">{menuItem.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-red-500">${menuItem.price}</span>
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                        ))}
+                  <Link to={`/product/${menuItem.id}`}>
+                    {menuItem.image ? (
+                      <img
+                        src={menuItem.image}
+                        alt={menuItem.name}
+                        className="w-full h-48 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-500">
+                        {menuItem.name.charAt(0)}
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold mb-2">{menuItem.name}</h3>
+                      <p className="text-gray-600 mb-4">{menuItem.description}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-red-500">${menuItem.price}</span>
+                        <button
+                          className="inline-flex items-center bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const cartItem: CartItem = {
+                              id: menuItem.id,
+                              name: menuItem.name,
+                              price: menuItem.price,
+                              image: menuItem.image,
+                              quantity: 1,
+                            };
+                            dispatch(addItem(cartItem));
+                          }}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-1" />
+                          Add to Cart
+                        </button>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>
