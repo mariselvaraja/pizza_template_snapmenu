@@ -9,7 +9,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // API paths from environment variables
 const MENU_API_PATH = import.meta.env.VITE_MENU_VIEW_API_PATH;
 const SITE_CONTENT_API_PATH = import.meta.env.VITE_SITE_CONTENT_VIEW_API_PATH;
-const CART_API_PATH = import.meta.env.VITE_CART_API_PATH;
 const PLACE_ORDER_API_PATH = import.meta.env.VITE_PLACE_ORDER_API_PATH;
 const RESTAURANT_DETAILS_API_PATH = import.meta.env.VITE_RESTAURANT_DETAILS_API_PATH;
 
@@ -47,10 +46,6 @@ export const endpoints = {
   
   // Cart endpoints
   cart: {
-    get: `${API_BASE_URL}${CART_API_PATH}`,
-    add: `${API_BASE_URL}${CART_API_PATH}/add`,
-    remove: (id: number) => `${API_BASE_URL}${CART_API_PATH}/remove/${id}`,
-    update: `${API_BASE_URL}${CART_API_PATH}/update`,
     placeOrder: `${API_BASE_URL}${PLACE_ORDER_API_PATH}`,
   },
   
