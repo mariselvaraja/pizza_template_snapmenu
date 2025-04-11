@@ -19,7 +19,13 @@ function* fetchSiteContentSaga(): Generator<any, void, any> {
     console.log('SiteContentSaga: Raw API response', response);
     
     // Transform the API response to match our SiteContent interface
-    const transformedData: SiteContent = yield call(siteContentService.getSiteContent);
+    // We need to pass the response data to the service to ensure it has the latest data
+    const transformedData: SiteContent = yield call(
+      siteContentService.getSiteContent,
+      response.data
+    );
+    
+    console.log('SiteContentSaga: Transformed data', transformedData);
     
     // Dispatch success action with both transformed data and raw response
     yield put(fetchSiteContentSuccess({

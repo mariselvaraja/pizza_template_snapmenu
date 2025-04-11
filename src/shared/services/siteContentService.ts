@@ -12,21 +12,28 @@ import { SiteContent } from '../redux/slices/siteContentSlice';
  */
 export const siteContentService = {
   /**
-   * Fetches all site content and transforms it to match our SiteContent interface
+   * Transforms site content data to match our SiteContent interface
+   * @param apiData Optional API data to transform. If not provided, will fetch from API.
    */
-  getSiteContent: async (): Promise<SiteContent> => {
+  getSiteContent: async (apiData?: any): Promise<SiteContent> => {
     try {
-      // Make API call to get site content data
-      const response = await api.get<any>(endpoints.siteContent.getAll);
+      // If no data is provided, fetch it from the API
+      let data;
+      if (!apiData) {
+        // Make API call to get site content data
+        const response = await api.get<any>(endpoints.siteContent.getAll);
+        
+        // Log the raw API response for debugging
+        console.log('SiteContentService: Raw API response', response);
+        
+        // Extract the data from the response
+        data = response.data;
+      } else {
+        data = apiData;
+      }
       
-      // Log the raw API response for debugging
-      console.log('SiteContentService: Raw API response', response);
-      
-      // Extract the data from the response
-      const data = response.data;
-      
-      // Log the extracted data before transformation
-      console.log('SiteContentService: API response data', data);
+      // Log the data before transformation
+      console.log('SiteContentService: Data to transform', data);
       
       // Create a properly structured SiteContent object
       const transformedData: SiteContent = {

@@ -80,13 +80,13 @@ export default function Menu() {
                     <div className="flex flex-col space-y-4 mb-12">
                         <div className="flex flex-wrap gap-4">
                             {[1, 2, 3, 4, 5].map((i) => (
-                                <div key={i} className="h-10 w-24 bg-gray-200 rounded-full animate-pulse"></div>
+                                <div key={i} className="h-10 w-24 bg-red-100 rounded-full animate-pulse"></div>
                             ))}
                         </div>
                         
                         {/* Skeleton for sort dropdown */}
                         <div className="flex justify-end">
-                            <div className="h-10 w-40 bg-gray-200 rounded-lg animate-pulse"></div>
+                            <div className="h-10 w-40 bg-red-100 rounded-lg animate-pulse"></div>
                         </div>
                     </div>
 
@@ -95,19 +95,19 @@ export default function Menu() {
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <div key={i} className="bg-white rounded-lg overflow-hidden shadow-lg">
                                 {/* Skeleton for image */}
-                                <div className="w-full h-64 bg-gray-300 animate-pulse"></div>
+                                <div className="w-full h-64 bg-red-100 animate-pulse"></div>
                                 <div className="p-6">
                                     {/* Skeleton for title and price */}
                                     <div className="flex items-center justify-between mb-2">
-                                        <div className="h-6 w-32 bg-gray-200 rounded animate-pulse"></div>
-                                        <div className="h-6 w-16 bg-gray-200 rounded animate-pulse"></div>
+                                        <div className="h-6 w-32 bg-red-100 rounded animate-pulse"></div>
+                                        <div className="h-6 w-16 bg-red-100 rounded animate-pulse"></div>
                                     </div>
                                     {/* Skeleton for description */}
-                                    <div className="h-4 w-full bg-gray-200 rounded mb-2 animate-pulse"></div>
-                                    <div className="h-4 w-3/4 bg-gray-200 rounded mb-4 animate-pulse"></div>
+                                    <div className="h-4 w-full bg-red-100 rounded mb-2 animate-pulse"></div>
+                                    <div className="h-4 w-3/4 bg-red-100 rounded mb-4 animate-pulse"></div>
                                     {/* Skeleton for button */}
                                     <div className="flex items-center justify-end">
-                                        <div className="h-10 w-32 bg-gray-200 rounded-full animate-pulse"></div>
+                                        <div className="h-10 w-32 bg-red-100 rounded-full animate-pulse"></div>
                                     </div>
                                 </div>
                             </div>
@@ -223,8 +223,8 @@ export default function Menu() {
                                         className="w-full h-64 object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-                                        <span className="text-6xl font-bold text-gray-500">
+                                    <div className="w-full h-64 bg-red-100 flex items-center justify-center">
+                                        <span className="text-6xl font-bold text-red-500">
                                             {item.name && item.name.length > 0 
                                               ? item.name.charAt(0).toUpperCase() 
                                               : 'P'}

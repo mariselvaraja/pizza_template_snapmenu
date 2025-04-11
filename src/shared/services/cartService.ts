@@ -155,58 +155,57 @@ export const cartService = {
    * Clears all items from the cart
    */
   clearCart: async (): Promise<CartItem[]> => {
-    // Use local storage in development or if mock is enabled
-    if (environment.enableMockApi) {
-      console.log('Clearing cart in local storage');
-      
-      try {
-        // Clear cart
-        localStorage.setItem('cart', JSON.stringify([]));
-        return [];
-      } catch (error) {
-        console.error('Error clearing cart in storage:', error);
-        throw error;
-      }
-    }
+    console.log('Clearing cart in local storage');
     
-    // Make API call in production or if mock is disabled
-    const response = await api.delete<CartItem[]>(endpoints.cart.clear);
-    return response.data;
+    try {
+      // Clear cart
+      localStorage.setItem('cart', JSON.stringify([]));
+      return [];
+    } catch (error) {
+      console.error('Error clearing cart in storage:', error);
+      throw error;
+    }
   },
 
   /**
    * Places an order with the current cart items and customer information
    */
   placeOrder: async (orderData: OrderData): Promise<any> => {
-    // Use mock implementation in development or if mock is enabled
-    if (environment.enableMockApi) {
-      console.log('Placing order with mock implementation');
-      console.log('Order data:', orderData);
-      
-      try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Clear cart after successful order
-        localStorage.setItem('cart', JSON.stringify([]));
-        
-        // Return mock order confirmation
-        return {
-          orderId: `ORD-${Date.now()}`,
-          status: 'confirmed',
-          estimatedDelivery: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-          items: orderData.items,
-          total: orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-        };
-      } catch (error) {
-        console.error('Error placing order with mock implementation:', error);
-        throw error;
-      }
-    }
+    console.log('Placing order with API');
     
-    // Make API call in production or if mock is disabled
-    const response = await api.post<any>(endpoints.cart.placeOrder, orderData);
-    return response.data;
+    try {
+      // Format the order payload as required
+      const formattedPayload = {
+        restaurant_id: "593f580d-b8ca-4a7a-ad0c-67049e83366e",
+        name: orderData.customerInfo.name,
+        phone: orderData.customerInfo.phone,
+        email: orderData.customerInfo.email,
+        special_requests: orderData.customerInfo.address || "",
+        order_type: "manual",
+        ordered_items: orderData.items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          itemPrice: item.price.toFixed(2),
+          modifiers: [],
+          modifier_price: null,
+          total_item_price: (item.price * item.quantity).toFixed(2)
+        })),
+        grand_total: orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)
+      };
+      
+      console.log('Formatted payload:', formattedPayload);
+      
+      // Make API call to place order
+      const response = await api.post<any>(endpoints.cart.placeOrder, formattedPayload);
+      
+      // Clear local cart after successful order
+      localStorage.setItem('cart', JSON.stringify([]));
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error placing order:', error);
+      throw error;
+    }
   },
 };
 

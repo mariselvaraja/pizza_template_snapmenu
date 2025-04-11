@@ -272,6 +272,92 @@ export function SiteContentProvider({ children }: SiteContentProviderProps) {
         } else {
           data = rawApiResponse.data;
         }
+        
+        // Log the data to debug
+        console.log('SiteContentContext: Transformed data from API', data);
+        
+        // Make sure blog data is properly mapped from the API response
+        if (content.blog && content.blog.length > 0) {
+          // If we have blog data in the content, make sure it's properly formatted for the UI
+          const blogData = {
+            header: {
+              title: "Our Blog",
+              description: "Culinary insights, recipes, and stories from our kitchen"
+            },
+            posts: content.blog.map(post => ({
+              id: post.id.toString(),
+              title: post.title,
+              subtitle: post.excerpt,
+              content: post.content,
+              image: post.image,
+              videoThumbnail: "",
+              videoUrl: "",
+              chef: post.author,
+              date: post.date,
+              readTime: "5 min"
+            }))
+          };
+          
+          // Ensure blog data is included in the site content
+          data = {
+            ...data,
+            blog: blogData
+          };
+          
+          console.log('SiteContentContext: Blog data mapped', blogData);
+        }
+        
+        // Make sure gallery data is properly mapped from the API response
+        if (content.gallery && content.gallery.length > 0) {
+          // If we have gallery data in the content, make sure it's properly formatted for the UI
+          const galleryData = {
+            section: {
+              title: "Our Gallery",
+              subtitle: "Explore our restaurant and cuisine through our gallery"
+            },
+            images: content.gallery.map(item => ({
+              image: item.image,
+              title: item.title,
+              description: item.description
+            }))
+          };
+          
+          // Ensure gallery data is included in the site content
+          data = {
+            ...data,
+            gallery: galleryData
+          };
+          
+          console.log('SiteContentContext: Gallery data mapped', galleryData);
+        }
+        
+        // Make sure events data is properly mapped from the API response
+        if (content.events && content.events.length > 0) {
+          // If we have events data in the content, make sure it's properly formatted for the UI
+          const eventsData = {
+            section: {
+              title: "Upcoming Events",
+              subtitle: "Join us for special culinary experiences and celebrations"
+            },
+            items: content.events.map(event => ({
+              image: event.image,
+              title: event.title,
+              description: event.description,
+              date: event.date,
+              time: "7:00 PM - 10:00 PM", // Default time if not provided
+              location: "Main Dining Room" // Default location if not provided
+            }))
+          };
+          
+          // Ensure events data is included in the site content
+          data = {
+            ...data,
+            events: eventsData
+          };
+          
+          console.log('SiteContentContext: Events data mapped', eventsData);
+        }
+        
         setSiteContent(data);
       } catch (error) {
         console.error('Error parsing site content data:', error);
@@ -291,44 +377,70 @@ export function SiteContentProvider({ children }: SiteContentProviderProps) {
   }, [loading, error]);
 
   // Provide a fallback value if siteContent is undefined
-  const fallbackContent: UISiteContent = {
+  const fallbackValue: UISiteContent = {
     navigationBar: {
       brand: {
-        name: "Restaurant",
+        name: "Pizza Restaurant",
         logo: {
-          icon: "Utensils",
-          text: "Restaurant"
+          icon: "/logo.png",
+          text: "Pizza Restaurant"
         }
       },
       navigation: {
-        links: []
+        links: [
+          { label: "Home", path: "/", isEnabled: true },
+          { label: "Menu", path: "/menu", isEnabled: true },
+          { label: "About", path: "/about", isEnabled: true },
+          { label: "Gallery", path: "/gallery", isEnabled: true },
+          { label: "Contact", path: "/contact", isEnabled: true }
+        ]
       },
       hero: {
-        banners: [],
+        banners: [
+          {
+            image: "/hero-1.jpg",
+            title: "Welcome to Pizza Restaurant",
+            subtitle: "Delicious pizzas made with fresh ingredients"
+          }
+        ],
         autoPlayInterval: 5000
       },
       experience: {
         section: {
-          title: "",
-          subtitle: ""
+          title: "Our Experience",
+          subtitle: "What makes us special"
         },
-        cards: []
+        cards: [
+          {
+            icon: "pizza",
+            title: "Fresh Ingredients",
+            description: "We use only the freshest ingredients",
+            image: "/ingredients.jpg"
+          }
+        ]
       }
     },
     footer: {
       newsletter: {
-        title: "",
-        description: ""
+        title: "Subscribe to our newsletter",
+        description: "Get updates on our latest offers"
       },
       servicesSection: {
-        title: "",
-        links: []
+        title: "Our Services",
+        links: [
+          { label: "Delivery", url: "#" },
+          { label: "Catering", url: "#" }
+        ]
       },
       copyright: {
-        text: ""
+        text: "© 2025 Pizza Restaurant. All rights reserved."
       },
       social: {
-        links: []
+        links: [
+          { icon: "facebook", url: "#" },
+          { icon: "instagram", url: "#" },
+          { icon: "twitter", url: "#" }
+        ]
       }
     }
   };
@@ -368,7 +480,7 @@ export function SiteContentProvider({ children }: SiteContentProviderProps) {
 
   // Provide the context value with proper error handling
   return (
-    <SiteContentContext.Provider value={siteContent || fallbackContent}>
+    <SiteContentContext.Provider value={siteContent || fallbackValue}>
       {children}
     </SiteContentContext.Provider>
   );

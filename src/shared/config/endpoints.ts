@@ -31,7 +31,6 @@ export const endpoints = {
     add: `${API_BASE_URL}${CART_API_PATH}/add`,
     remove: (id: number) => `${API_BASE_URL}${CART_API_PATH}/remove/${id}`,
     update: `${API_BASE_URL}${CART_API_PATH}/update`,
-    clear: `${API_BASE_URL}${CART_API_PATH}/clear`,
     placeOrder: `${API_BASE_URL}${PLACE_ORDER_API_PATH}`,
   },
 };

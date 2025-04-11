@@ -66,8 +66,8 @@ export default function Cart() {
                           className="w-20 h-20 object-cover rounded-lg mr-6"
                         />
                       ) : (
-                        <div className="w-20 h-20 bg-gray-200 flex items-center justify-center rounded-lg mr-6">
-                          <span className="text-2xl font-bold text-gray-500">
+                        <div className="w-20 h-20 bg-red-100 flex items-center justify-center rounded-lg mr-6">
+                          <span className="text-2xl font-bold text-red-500">
                             {item.name && item.name.length > 0 
                               ? item.name.charAt(0).toUpperCase() 
                               : 'P'}
@@ -79,14 +79,14 @@ export default function Cart() {
                         <p className="text-gray-600">${item.price.toFixed(2)}</p>
                         <div className="flex items-center mt-2">
                           <button 
-                            className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center"
+                            className="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center"
                             onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                           >
                             -
                           </button>
                           <span className="mx-3">{item.quantity}</span>
                           <button 
-                            className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center"
+                            className="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center"
                             onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                           >
                             +
@@ -134,9 +134,12 @@ export default function Cart() {
                 </div>
                 <button 
                   onClick={() => navigate('/checkout')}
-                  className="w-full bg-red-500 text-white py-3 rounded-full font-semibold hover:bg-red-600 transition-colors mt-6"
+                  disabled={cartItems.length === 0}
+                  className={`w-full bg-red-500 text-white py-3 rounded-full font-semibold hover:bg-red-600 transition-colors mt-6 ${
+                    cartItems.length === 0 ? 'opacity-70 cursor-not-allowed' : ''
+                  }`}
                 >
-                  Proceed to Checkout
+                  {cartItems.length === 0 ? 'Your Cart is Empty' : 'Proceed to Checkout'}
                 </button>
                 <p className="text-sm text-gray-500 text-center mt-4">
                   Estimated delivery time: 30-45 minutes

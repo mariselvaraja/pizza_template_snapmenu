@@ -26,7 +26,12 @@ const categories = [
 
 export default function Blog() {
   const siteContent = useSiteContent();
-  const blog = siteContent?.blog || {
+  
+  // Log the site content to debug
+  console.log('Blog component: siteContent', siteContent);
+  
+  // Default blog data in case API data is not available
+  const defaultBlog = {
     header: {
       title: "Our Blog",
       description: "Culinary insights, recipes, and stories from our kitchen"
@@ -70,6 +75,12 @@ export default function Blog() {
       }
     ]
   };
+  
+  // Use API data if available, otherwise use default data
+  const blog = siteContent?.blog || defaultBlog;
+  
+  // Log the blog data being used
+  console.log('Blog component: Using blog data', blog);
   
   // Transform blog data from siteContent to match the format expected by the component
   const blogPosts: BlogPost[] = blog.posts.map(post => ({

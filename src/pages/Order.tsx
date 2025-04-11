@@ -1,12 +1,27 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Clock, Truck, Trash2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { RootState, AppDispatch } from '../store';
+import { useDispatch } from 'react-redux';
+import { fetchMenuRequest } from '../shared/redux/slices/menuSlice';
+import { addItem, updateItemQuantity, removeItem } from '../shared/redux/slices/cartSlice';
+import { useNavigate } from 'react-router-dom';
 
 export default function Order() {
   const [orderType, setOrderType] = useState<'delivery' | 'pickup'>('delivery');
   const cartItems = useSelector((state: RootState) => state.cart.items);
+  const menuItems = useSelector((state: RootState) => state.menu.items);
+  const loading = useSelector((state: RootState) => state.menu.loading);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Fetch menu items if not already loaded
+    if (menuItems.length === 0 && !loading) {
+      dispatch(fetchMenuRequest());
+    }
+  }, [dispatch, menuItems.length, loading]);
 
   return (
     <div className="py-20">
@@ -52,26 +67,16 @@ export default function Order() {
           <div className="md:col-span-2">
             <h2 className="text-2xl font-semibold mb-6">Menu</h2>
             <div className="space-y-6">
-              {[
-                {
-                  name: "Cosmic Supreme",
-                  description: "Pepperoni, mushrooms, onions, green peppers, black olives",
-                  price: "$18.99",
-                  image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                },
-                {
-                  name: "Meteor Margherita",
-                  description: "Fresh tomatoes, mozzarella, basil",
-                  price: "$15.99",
-                  image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                },
-                {
-                  name: "Galaxy Special",
-                  description: "Ham, pineapple, bacon, extra cheese",
-                  price: "$20.99",
-                  image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                }
-              ].map((item, index) => (
+              {loading ? (
+                <div className="text-center py-8">
+                  <p>Loading menu items...</p>
+                </div>
+              ) : menuItems.length === 0 ? (
+                <div className="text-center py-8">
+                  <p>No menu items available</p>
+                </div>
+              ) : (
+                menuItems.map((item, index) => (
                 <motion.div
                   key={item.name}
                   initial={{ opacity: 0, y: 20 }}
@@ -79,23 +84,41 @@ export default function Order() {
                   transition={{ duration: 0.5, delay: index * 0.2 }}
                   className="bg-white rounded-lg shadow-md overflow-hidden flex"
                 >
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-1/3 object-cover"
-                  />
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-1/3 object-cover"
+                    />
+                  ) : (
+                    <div className="w-1/3 bg-red-100 flex items-center justify-center">
+                      <span className="text-4xl font-bold text-red-500">
+                        {item.name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                   <div className="p-6 flex-1 flex flex-col justify-between">
                     <div>
                       <h3 className="text-xl font-semibold mb-2">{item.name}</h3>
                       <p className="text-gray-600 mb-4">{item.description}</p>
-                      <p className="text-lg font-bold text-red-500">{item.price}</p>
+                      <p className="text-lg font-bold text-red-500">${item.price.toFixed(2)}</p>
                     </div>
-                    <button className="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition-colors">
+                    <button 
+                      onClick={() => dispatch(addItem({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: 1,
+                        image: item.image || ''
+                      }))}
+                      className="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition-colors"
+                    >
                       Add to Cart
                     </button>
                   </div>
                 </motion.div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -110,11 +133,19 @@ export default function Order() {
                     {cartItems.map((item) => (
                       <li key={item.id} className="py-4 flex items-center justify-between">
                         <div className="flex items-center">
-                          {/* <img // Commented out image to avoid errors for now
-                            src={item.image}
-                            alt={item.name}
-                            className="w-16 h-16 object-cover rounded-lg mr-4"
-                          /> */}
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-16 h-16 object-cover rounded-lg mr-4"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 bg-red-100 flex items-center justify-center rounded-lg mr-4">
+                              <span className="text-xl font-bold text-red-500">
+                                {item.name.charAt(0)}
+                              </span>
+                            </div>
+                          )}
                           <div>
                             <h3 className="font-semibold">{item.name}</h3>
                             <p className="text-gray-600 text-sm">${item.price.toFixed(2)}</p>
@@ -122,15 +153,30 @@ export default function Order() {
                         </div>
                         <div className="text-right">
                           <div className="flex items-center justify-end mt-2">
-                            <button className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
+                            <button 
+                              onClick={() => {
+                                if (item.quantity > 1) {
+                                  dispatch(updateItemQuantity({ id: item.id, quantity: item.quantity - 1 }));
+                                } else {
+                                  dispatch(removeItem(item.id));
+                                }
+                              }}
+                              className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center"
+                            >
                               -
                             </button>
                             <span className="mx-2">{item.quantity}</span>
-                            <button className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
+                            <button 
+                              onClick={() => dispatch(updateItemQuantity({ id: item.id, quantity: item.quantity + 1 }))}
+                              className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center"
+                            >
                               +
                             </button>
                           </div>
-                          <button className="text-red-500 hover:text-red-600 transition-colors mt-2">
+                          <button 
+                            onClick={() => dispatch(removeItem(item.id))}
+                            className="text-red-500 hover:text-red-600 transition-colors mt-2"
+                          >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
@@ -160,10 +206,13 @@ export default function Order() {
                 </div>
               </div>
               <button
-                className="w-full bg-red-500 text-white py-3 rounded-full mt-6 font-semibold hover:bg-red-600 transition-colors"
+                onClick={() => navigate('/checkout')}
+                className={`w-full bg-red-500 text-white py-3 rounded-full mt-6 font-semibold hover:bg-red-600 transition-colors ${
+                  cartItems && cartItems.length === 0 ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
                 disabled={cartItems && cartItems.length === 0} // Disable if cart is empty
               >
-                Checkout
+                {cartItems && cartItems.length === 0 ? 'Your Cart is Empty' : 'Checkout'}
               </button>
             </div>
           </div>

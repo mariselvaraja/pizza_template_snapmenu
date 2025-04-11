@@ -75,8 +75,8 @@ export default function CartDrawer() {
                           className="w-16 h-16 object-cover rounded-lg mr-4"
                         />
                       ) : (
-                        <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-lg mr-4">
-                          <span className="text-xl font-bold text-gray-500">
+                        <div className="w-16 h-16 bg-red-100 flex items-center justify-center rounded-lg mr-4">
+                          <span className="text-xl font-bold text-red-500">
                             {item.name && item.name.length > 0 
                               ? item.name.charAt(0).toUpperCase() 
                               : 'P'}
@@ -88,14 +88,14 @@ export default function CartDrawer() {
                         <p className="text-gray-600">${item.price.toFixed(2)}</p>
                         <div className="flex items-center mt-2">
                           <button 
-                            className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-sm"
+                            className="w-7 h-7 bg-red-50 rounded-full flex items-center justify-center text-sm"
                             onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                           >
                             -
                           </button>
                           <span className="mx-2 text-sm">{item.quantity}</span>
                           <button 
-                            className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-sm"
+                            className="w-7 h-7 bg-red-50 rounded-full flex items-center justify-center text-sm"
                             onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                           >
                             +
@@ -146,9 +146,11 @@ export default function CartDrawer() {
                   <Link
                     to="/checkout"
                     onClick={closeDrawer}
-                    className="block w-full bg-red-500 text-white py-2 rounded-full font-semibold text-center hover:bg-red-600 transition-colors"
+                    className={`block w-full bg-red-500 text-white py-2 rounded-full font-semibold text-center hover:bg-red-600 transition-colors ${
+                      items.length === 0 ? 'opacity-70 pointer-events-none' : ''
+                    }`}
                   >
-                    Checkout
+                    {items.length === 0 ? 'Your Cart is Empty' : 'Checkout'}
                   </Link>
                 </div>
               </div>

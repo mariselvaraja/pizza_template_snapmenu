@@ -37,20 +37,20 @@ export default function ProductDetail() {
             <div className="py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Back button skeleton */}
-                    <div className="h-10 w-32 bg-gray-200 rounded-full animate-pulse mb-8"></div>
+                    <div className="h-10 w-32 bg-red-100 rounded-full animate-pulse mb-8"></div>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         {/* Related Products skeleton on LHS */}
                         <div className="md:col-span-1">
-                            <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
+                            <div className="h-6 w-32 bg-red-100 rounded animate-pulse mb-4"></div>
                             <div className="space-y-4">
                                 {[1, 2, 3, 4, 5].map((i) => (
                                     <div key={i} className="bg-white rounded-lg overflow-hidden shadow-sm">
                                         <div className="flex items-center p-2">
-                                            <div className="w-16 h-16 bg-gray-300 rounded-md mr-3 animate-pulse"></div>
+                                            <div className="w-16 h-16 bg-red-100 rounded-md mr-3 animate-pulse"></div>
                                             <div>
-                                                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse mb-2"></div>
-                                                <div className="h-3 w-12 bg-gray-200 rounded animate-pulse"></div>
+                                                <div className="h-4 w-20 bg-red-100 rounded animate-pulse mb-2"></div>
+                                                <div className="h-3 w-12 bg-red-100 rounded animate-pulse"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -63,23 +63,23 @@ export default function ProductDetail() {
                             {/* Product Header with Image on Right */}
                             <div className="flex flex-col md:flex-row justify-between items-start mb-8">
                                 <div className="md:pr-8 md:w-1/2">
-                                    <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
-                                    <div className="h-6 w-24 bg-gray-200 rounded animate-pulse mb-4"></div>
+                                    <div className="h-8 w-48 bg-red-100 rounded animate-pulse mb-2"></div>
+                                    <div className="h-6 w-24 bg-red-100 rounded animate-pulse mb-4"></div>
                                     <div className="flex flex-wrap gap-2 mb-4">
-                                        <div className="h-6 w-20 bg-gray-200 rounded-full animate-pulse"></div>
-                                        <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse"></div>
+                                        <div className="h-6 w-20 bg-red-100 rounded-full animate-pulse"></div>
+                                        <div className="h-6 w-16 bg-red-100 rounded-full animate-pulse"></div>
                                     </div>
-                                    <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
-                                    <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
-                                    <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+                                    <div className="h-4 w-full bg-red-100 rounded animate-pulse mb-2"></div>
+                                    <div className="h-4 w-full bg-red-100 rounded animate-pulse mb-2"></div>
+                                    <div className="h-4 w-3/4 bg-red-100 rounded animate-pulse"></div>
                                 </div>
                                 <div className="md:w-1/2 mt-4 md:mt-0">
-                                    <div className="w-full h-64 bg-gray-300 rounded-lg animate-pulse"></div>
+                                    <div className="w-full h-64 bg-red-100 rounded-lg animate-pulse"></div>
                                 </div>
                             </div>
 
                             {/* Add to cart button skeleton */}
-                            <div className="w-full h-12 bg-gray-200 rounded-full animate-pulse"></div>
+                            <div className="w-full h-12 bg-red-100 rounded-full animate-pulse"></div>
                         </div>
                     </div>
                 </div>
@@ -158,8 +158,8 @@ export default function ProductDetail() {
                                                     className="w-16 h-16 object-cover rounded-md mr-3"
                                                 />
                                             ) : (
-                                                <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-md mr-3">
-                                                    <span className="text-xl font-bold text-gray-500">
+                                                <div className="w-16 h-16 bg-red-100 flex items-center justify-center rounded-md mr-3">
+                                                    <span className="text-xl font-bold text-red-500">
                                                         {item.name && item.name.length > 0 
                                                           ? item.name.charAt(0).toUpperCase() 
                                                           : 'P'}
@@ -217,8 +217,8 @@ export default function ProductDetail() {
                                             className="w-full h-64 object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-                                            <span className="text-6xl font-bold text-gray-500">
+                                        <div className="w-full h-64 bg-red-100 flex items-center justify-center">
+                                            <span className="text-6xl font-bold text-red-500">
                                                 {product.name && product.name.length > 0 
                                                   ? product.name.charAt(0).toUpperCase() 
                                                   : 'P'}

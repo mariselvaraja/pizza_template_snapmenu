@@ -57,6 +57,7 @@ export default function Checkout() {
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [orderResponse, setOrderResponse] = useState<{ message?: string, payment_link?: string } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -162,6 +163,7 @@ export default function Checkout() {
       const response = await cartService.placeOrder(orderData);
       console.log('Order placed successfully:', response);
       
+      setOrderResponse(response);
       setOrderComplete(true);
       // Clear the cart after successful order
       dispatch(clearCart());
@@ -183,18 +185,33 @@ export default function Checkout() {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-lg shadow-lg p-8 text-center"
           >
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
-            <p className="text-gray-600 mb-6">
-              Thank you for your order. We've received your order and will begin preparing it right away.
-            </p>
-            <p className="text-gray-600 mb-8">
-              A confirmation email has been sent to {formData.email}.
-            </p>
+            {orderResponse?.payment_link ? (
+              <>
+                <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
+                <div className="w-full h-96 mb-6">
+                  <iframe 
+                    src={orderResponse.payment_link} 
+                    className="w-full h-full border-0 rounded-lg"
+                    title="Payment"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
+                <p className="text-gray-600 mb-6">
+                  {orderResponse?.message || "Thank you for your order. We've received your order and will begin preparing it right away."}
+                </p>
+                <p className="text-gray-600 mb-8">
+                  A confirmation email has been sent to {formData.email}.
+                </p>
+              </>
+            )}
             <Link
               to="/"
               className="bg-red-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition-colors"
@@ -310,12 +327,12 @@ export default function Checkout() {
                 <div className="pt-4">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || cartItems.length === 0}
                     className={`w-full bg-red-500 text-white py-3 rounded-full font-semibold hover:bg-red-600 transition-colors ${
-                      isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                      (isSubmitting || cartItems.length === 0) ? 'opacity-70 cursor-not-allowed' : ''
                     }`}
                   >
-                    {isSubmitting ? 'Processing...' : 'Complete Order'}
+                    {isSubmitting ? 'Processing...' : cartItems.length === 0 ? 'Your Cart is Empty' : 'Complete Order'}
                   </button>
                 </div>
               </form>
@@ -335,8 +352,23 @@ export default function Checkout() {
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex justify-between items-center py-2 border-b">
                     <div className="flex items-center">
-                      <span className="font-medium">{item.quantity}x</span>
-                      <span className="ml-2">{item.name}</span>
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-10 h-10 object-cover rounded-md mr-2"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-red-100 flex items-center justify-center rounded-md mr-2">
+                          <span className="text-sm font-bold text-red-500">
+                            {item.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <span className="font-medium">{item.quantity}x</span>
+                        <span className="ml-2">{item.name}</span>
+                      </div>
                     </div>
                     <span>${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
