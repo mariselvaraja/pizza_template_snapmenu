@@ -17,14 +17,20 @@ const transformMenuItems = (apiResponse: any[]): MenuItem[] => {
   if (!apiResponse || !Array.isArray(apiResponse)) return [];
   
   return apiResponse.map(item => ({
-    id: parseInt(item.sku_id.replace('CHR', '')) || 0,
+    id: parseInt(item.sku_id?.replace('CHR', '')) || parseInt(item.id) || 0,
     name: item.name || '',
     description: item.description || item.product_description || '',
-    price: parseFloat(item.price?.replace('$', '')) || 0,
+    price: parseFloat(item.price?.toString().replace('$', '')) || 0,
     image: item.image || '',
     category: item.level1_category || item.category || '',
-    available: item.is_enabled === 'true',
-    tags: extractTags(item)
+    available: item.is_enabled === 'true' || true,
+    tags: extractTags(item),
+    calories: item.calories,
+    nutrients: item.nutrients,
+    dietary: item.dietary,
+    allergens: item.allergens,
+    ingredients: item.ingredients,
+    pairings: item.pairings
   }));
 };
 

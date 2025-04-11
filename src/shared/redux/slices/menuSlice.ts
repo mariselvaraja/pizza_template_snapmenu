@@ -9,6 +9,25 @@ export interface MenuItem {
   category: string;
   tags?: string[];
   available: boolean;
+  calories?: number;
+  nutrients?: {
+    protein: string;
+    carbs: string;
+    fat: string;
+    sat: string;
+    unsat: string;
+    trans: string;
+    sugar: string;
+    fiber: string;
+  };
+  dietary?: {
+    isVegetarian: boolean;
+    isVegan: boolean;
+    isGlutenFree: boolean;
+  };
+  allergens?: string[];
+  ingredients?: string[];
+  pairings?: string[];
 }
 
 export interface MenuCategory {

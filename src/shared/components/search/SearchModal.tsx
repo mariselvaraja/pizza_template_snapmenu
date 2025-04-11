@@ -5,16 +5,6 @@ import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import { closeSearchModal, setSearchQuery, setSearchResults, setSearchState } from '../../redux/slices/searchSlice';
 import { searchService, SearchState } from '../../services';
 
-// Quick links for common searches
-const QUICK_LINKS = [
-  { text: 'Pizza', query: 'pizza' },
-  { text: 'Pasta', query: 'pasta' },
-  { text: 'Vegetarian', query: 'vegetarian' },
-  { text: 'Desserts', query: 'dessert' },
-  { text: 'Drinks', query: 'drink' },
-  { text: 'Appetizers', query: 'appetizer' }
-];
-
 // Format price to display with currency symbol
 const formatPrice = (price: number): string => {
   return `$${price.toFixed(2)}`;
@@ -120,7 +110,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   // Handle item select
   const handleItemSelect = (result: any) => {
     handleClose();
-    navigate(`/menu/${result.item.category}/${result.item.id}`);
+    navigate(`/product/${result.item.id}`);
   };
 
   // Get flattened list of all items for keyboard navigation
@@ -197,6 +187,47 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     dispatch(setSearchQuery(e.target.value));
     setSelectedIndex(-1);
   };
+
+  // Get menu data from Redux store
+  const menuItems = useAppSelector((state) => state.menu.items);
+  const menuCategories = useAppSelector((state) => state.menu.categories);
+
+  // Dispatch action to fetch menu data if not already loaded
+  useEffect(() => {
+    // If menu items are empty, dispatch action to fetch menu data
+    if ((!menuItems || menuItems.length === 0) && 
+        (!menuCategories || menuCategories.length === 0)) {
+      dispatch({ type: 'menu/fetchMenuRequest' });
+    }
+  }, [dispatch, menuItems, menuCategories]);
+  
+  // Generate quick links from menu categories
+  const quickLinks = React.useMemo(() => {
+    // First try to use menu categories from Redux
+    if (menuCategories && menuCategories.length > 0) {
+      return menuCategories.map(category => ({
+        text: category.name,
+        query: category.name.toLowerCase()
+      }));
+    }
+    
+    // If no categories in Redux, extract unique categories from menu items
+    if (menuItems && menuItems.length > 0) {
+      const uniqueCategories = [...new Set(menuItems.map(item => item.category))];
+      return uniqueCategories.map(category => ({
+        text: category.charAt(0).toUpperCase() + category.slice(1),
+        query: category.toLowerCase()
+      }));
+    }
+    
+    // Default fallback if API data isn't loaded yet
+    return [
+      { text: 'Starters', query: 'starters' },
+      { text: 'Mains', query: 'mains' },
+      { text: 'Desserts', query: 'desserts' },
+      { text: 'Drinks', query: 'drinks' }
+    ];
+  }, [menuCategories, menuItems]);
 
   // Handle quick link click
   const handleQuickLinkClick = (quickLink: { text: string, query: string }) => {
@@ -354,7 +385,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             <div className="p-4 border-b border-gray-700">
               <div className="text-sm font-medium text-gray-400 mb-2">Quick Links</div>
               <div className="flex flex-wrap gap-2">
-                {QUICK_LINKS.map((link) => (
+                {quickLinks.map((link) => (
                   <button
                     key={link.query}
                     onClick={() => handleQuickLinkClick(link)}

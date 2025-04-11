@@ -82,8 +82,8 @@ export default function Blog() {
     image: post.image
   }));
   
-  // Use the first post as the featured post
-  const featuredPost = blogPosts[0];
+  // Use the first post as the featured post if available
+  const featuredPost = blogPosts.length > 0 ? blogPosts[0] : null;
   return (
     <div className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -100,43 +100,45 @@ export default function Blog() {
         </motion.div>
 
         {/* Featured Post */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="mb-16"
-        >
-          <div className="relative h-[500px] rounded-xl overflow-hidden">
-            <img
-              src={featuredPost.image}
-              alt={featuredPost.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent">
-              <div className="absolute bottom-0 left-0 right-0 p-8">
-                <span className="text-red-500 bg-white px-4 py-1 rounded-full text-sm font-semibold">
-                  Featured
-                </span>
-                <h2 className="text-3xl font-bold text-white mt-4">
-                  {featuredPost.title}
-                </h2>
-                <p className="text-gray-200 mt-2 mb-4">
-                  {featuredPost.excerpt}
-                </p>
-                <div className="flex items-center text-white gap-4">
-                  <div className="flex items-center">
-                    <User className="h-4 w-4 mr-2" />
-                    <span>{featuredPost.author}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span>{new Date(featuredPost.date).toLocaleDateString()}</span>
+        {featuredPost && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="mb-16"
+          >
+            <div className="relative h-[500px] rounded-xl overflow-hidden">
+              <img
+                src={featuredPost.image}
+                alt={featuredPost.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-8">
+                  <span className="text-red-500 bg-white px-4 py-1 rounded-full text-sm font-semibold">
+                    Featured
+                  </span>
+                  <h2 className="text-3xl font-bold text-white mt-4">
+                    {featuredPost.title}
+                  </h2>
+                  <p className="text-gray-200 mt-2 mb-4">
+                    {featuredPost.excerpt}
+                  </p>
+                  <div className="flex items-center text-white gap-4">
+                    <div className="flex items-center">
+                      <User className="h-4 w-4 mr-2" />
+                      <span>{featuredPost.author}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      <span>{new Date(featuredPost.date).toLocaleDateString()}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* Categories */}
         <div className="flex flex-wrap gap-4 mb-12">

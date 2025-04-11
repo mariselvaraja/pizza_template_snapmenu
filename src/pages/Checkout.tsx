@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch, clearCart } from '../shared/redux';
+import { cartService } from '../shared/services';
 
 interface FormData {
   name: string;
@@ -127,7 +128,7 @@ export default function Checkout() {
     };
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -139,16 +140,37 @@ export default function Checkout() {
     // Create the order payload
     const orderPayload = createOrderPayload();
     
-    // In a real application, you would send this payload to your backend
-    console.log('Order Payload:', orderPayload);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Call the placeOrder API endpoint
+      console.log('Placing order with payload:', orderPayload);
+      
+      // Convert the order payload to the format expected by cartService.placeOrder
+      const orderData = {
+        items: cartItems,
+        customerInfo: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          address: '', // Not collected in this form
+        },
+        paymentInfo: {
+          method: 'card', // Default payment method
+        },
+      };
+      
+      // Call the placeOrder API endpoint
+      const response = await cartService.placeOrder(orderData);
+      console.log('Order placed successfully:', response);
+      
       setOrderComplete(true);
       // Clear the cart after successful order
       dispatch(clearCart());
-    }, 1500);
+    } catch (error) {
+      console.error('Error placing order:', error);
+      // Handle error (could show an error message to the user)
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (orderComplete) {

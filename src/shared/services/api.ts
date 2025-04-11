@@ -107,8 +107,16 @@ export const api = {
    * Makes a POST request to the specified URL with the given body
    */
   post: <T>(url: string, body: any, options: RequestInit = {}): Promise<ApiResponse<T>> => {
+    let headers = {};
+    
+    // Add restaurant header for placeOrder endpoint
+    if (url.includes('/placeOrder')) {
+      headers = {restaurantId: "2256b9a6-5d53-4b77-b6a0-539043489ad3"};
+    }
+    
     return request<T>(url, {
       ...options,
+      headers,
       method: 'POST',
       body: JSON.stringify(body),
     });

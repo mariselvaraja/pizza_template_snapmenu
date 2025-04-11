@@ -229,17 +229,93 @@ export default function ProductDetail() {
                             </div>
                         </div>
 
-                        {/* Nutritional information section - removed as it's not in the Redux MenuItem type */}
+                        {/* Nutritional information section */}
+                        {product.calories && (
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold mb-4">Nutritional Information</h2>
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <div className="flex justify-between items-center border-b border-gray-200 py-2">
+                                        <span className="font-medium">Calories</span>
+                                        <span>{product.calories}</span>
+                                    </div>
+                                    {product.nutrients && (
+                                        <>
+                                            <div className="flex justify-between items-center border-b border-gray-200 py-2">
+                                                <span className="font-medium">Protein</span>
+                                                <span>{product.nutrients.protein}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center border-b border-gray-200 py-2">
+                                                <span className="font-medium">Carbs</span>
+                                                <span>{product.nutrients.carbs}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center border-b border-gray-200 py-2">
+                                                <span className="font-medium">Fat</span>
+                                                <span>{product.nutrients.fat}</span>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Ingredients section */}
+                        {product.ingredients && product.ingredients.length > 0 && (
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold mb-4">Ingredients</h2>
+                                <div className="flex flex-wrap gap-2">
+                                    {product.ingredients.map((ingredient, index) => (
+                                        <span 
+                                            key={index} 
+                                            className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
+                                        >
+                                            {ingredient}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Allergens section */}
+                        {product.allergens && product.allergens.length > 0 && (
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold mb-4">Allergens</h2>
+                                <div className="flex flex-wrap gap-2">
+                                    {product.allergens.map((allergen, index) => (
+                                        <span 
+                                            key={index} 
+                                            className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm"
+                                        >
+                                            {allergen}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         <button
-                            className="w-full inline-flex items-center justify-center bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-colors"
+                            className="w-full inline-flex items-center justify-center bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-colors mb-8"
                             onClick={() => handleAddToCart(product)}
                         >
                             <ShoppingCart className="h-5 w-5 mr-2" />
                             Add to Cart
                         </button>
 
-                        {/* Pairings section - removed as it's not in the Redux MenuItem type */}
+                        {/* Pairings section */}
+                        {product.pairings && product.pairings.length > 0 && (
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold mb-4">Perfect Pairings</h2>
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <ul className="space-y-2">
+                                        {product.pairings.map((pairing, index) => (
+                                            <li key={index} className="flex items-center">
+                                                <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                                {pairing}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
                     </motion.div>
                 </div>
             </div>

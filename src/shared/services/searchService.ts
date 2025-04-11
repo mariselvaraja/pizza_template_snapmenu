@@ -560,6 +560,11 @@ class SearchService {
       }
       
       console.log('Performing search for:', query);
+      
+      // Check if this is a category search (single word that might be a category)
+      const isCategorySearch = query.trim().split(/\s+/).length === 1;
+      
+      // Create query embedding
       const queryEmbedding = this.createQueryEmbedding(query);
 
       // Get matching items from embeddings
@@ -582,7 +587,10 @@ class SearchService {
             }
 
             // Category matches (high weight)
-            if (item.category.toLowerCase().includes(word)) {
+            if (item.category.toLowerCase() === word) {
+              // Exact category match gets higher score
+              categoryScore += 2.0;
+            } else if (item.category.toLowerCase().includes(word)) {
               categoryScore += 0.8;
             }
 
@@ -591,18 +599,24 @@ class SearchService {
               descriptionScore += 0.6;
             }
 
-            // Tags matches (medium weight)
-            if ((item.tags || []).some((t: string) => t.toLowerCase().includes(word))) {
+            // Tags matches (medium-high weight for better category matching)
+            if ((item.tags || []).some((t: string) => t.toLowerCase() === word)) {
+              // Exact tag match gets higher score
+              tagsScore += 1.0;
+            } else if ((item.tags || []).some((t: string) => t.toLowerCase().includes(word))) {
               tagsScore += 0.5;
             }
           });
 
+          // For category searches, boost category and tag matches
+          const categoryMultiplier = isCategorySearch ? 2.0 : 1.0;
+          
           // Calculate combined score
           const textScore = (
             (nameScore * 0.35) +
-            (categoryScore * 0.25) +
+            (categoryScore * 0.25 * categoryMultiplier) +
             (descriptionScore * 0.15) +
-            (tagsScore * 0.25)
+            (tagsScore * 0.25 * categoryMultiplier)
           );
 
           return textScore > 0 ? { id, item, score: textScore } : null;
