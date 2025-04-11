@@ -18,7 +18,7 @@ import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import { SiteContentProvider } from './context/SiteContentContext';
-import { SearchInitializer } from './shared';
+import { SearchInitializer, RestaurantInitializer } from './shared';
 
 function App() {
   return (
@@ -26,6 +26,7 @@ function App() {
       <Router>
         <div className="min-h-screen flex flex-col">
           <SearchInitializer />
+          <RestaurantInitializer />
           <TitleUpdater />
           <Navbar />
           <CartDrawer />

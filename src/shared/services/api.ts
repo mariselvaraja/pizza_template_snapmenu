@@ -4,6 +4,7 @@
  */
 
 import { environment } from '../config/endpoints';
+import { getStoreState } from './storeAccess';
 
 // Types for API responses
 export interface ApiResponse<T> {
@@ -99,7 +100,11 @@ export const api = {
    * Makes a GET request to the specified URL
    */
   get: <T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
-    let headers : any = {restaurantId: "2256b9a6-5d53-4b77-b6a0-539043489ad3"}
+    // Get restaurant_id from Redux store if available
+    const state = getStoreState();
+    const restaurantId = state?.restaurant?.info?.restaurant_id || "2256b9a6-5d53-4b77-b6a0-539043489ad3";
+    
+    let headers : any = {restaurantId: restaurantId}
     return request<T>(url, { ...options, headers, method: 'GET' });
   },
 
@@ -107,11 +112,15 @@ export const api = {
    * Makes a POST request to the specified URL with the given body
    */
   post: <T>(url: string, body: any, options: RequestInit = {}): Promise<ApiResponse<T>> => {
+    // Get restaurant_id from Redux store if available
+    const state = getStoreState();
+    const restaurantId = state?.restaurant?.info?.restaurant_id || "2256b9a6-5d53-4b77-b6a0-539043489ad3";
+    
     let headers = {};
     
     // Add restaurant header for placeOrder endpoint
     if (url.includes('/placeOrder')) {
-      headers = {restaurantId: "2256b9a6-5d53-4b77-b6a0-539043489ad3"};
+      headers = {restaurantId: restaurantId};
     }
     
     return request<T>(url, {

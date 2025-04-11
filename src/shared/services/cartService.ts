@@ -176,7 +176,7 @@ export const cartService = {
     try {
       // Format the order payload as required
       const formattedPayload = {
-        restaurant_id: "593f580d-b8ca-4a7a-ad0c-67049e83366e",
+        restaurant_id: "2256b9a6-5d53-4b77-b6a0-539043489ad3",
         name: orderData.customerInfo.name,
         phone: orderData.customerInfo.phone,
         email: orderData.customerInfo.email,
