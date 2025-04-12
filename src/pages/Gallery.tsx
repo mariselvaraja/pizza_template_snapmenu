@@ -3,9 +3,6 @@ import { useState, useEffect } from 'react';
 import { X, Play } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
 
-// Define categories based on the gallery items
-const categories = ["All", "Restaurant", "Food", "Ambiance"];
-
 type MediaItem = {
   id: number;
   type: 'image' | 'video';
@@ -43,7 +40,6 @@ export default function Gallery() {
     ]
   };
   const [galleryItems, setGalleryItems] = useState<MediaItem[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
 
   // Transform gallery data from siteContent to match the component's expected format
@@ -62,10 +58,6 @@ export default function Gallery() {
     }
   }, [gallery]);
 
-  const filteredItems = selectedCategory === "All"
-    ? galleryItems
-    : galleryItems.filter(item => item.category === selectedCategory);
-
   return (
     <div className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,26 +73,9 @@ export default function Gallery() {
           </p>
         </motion.div>
 
-        {/* Category Filter */}
-        <div className="flex justify-center gap-4 mb-12">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-2 rounded-full transition-colors ${
-                selectedCategory === category
-                  ? 'bg-red-500 text-white'
-                  : 'bg-white hover:bg-gray-100'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredItems.map((item, index) => (
+          {galleryItems.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 20 }}

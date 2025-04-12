@@ -14,16 +14,6 @@ interface BlogPost {
   image: string;
 }
 
-// Define categories for blog posts
-const categories = [
-  "All Posts",
-  "Culinary Techniques",
-  "Chef Stories",
-  "Food Trends",
-  "Events",
-  "Behind the Scenes"
-];
-
 export default function Blog() {
   const siteContent = useSiteContent();
   
@@ -119,11 +109,36 @@ export default function Blog() {
             className="mb-16"
           >
             <div className="relative h-[500px] rounded-xl overflow-hidden">
-              <img
-                src={featuredPost.image}
-                alt={featuredPost.title}
-                className="w-full h-full object-cover"
-              />
+              {featuredPost.image ? (
+                <div className="w-full h-full">
+                  <img
+                    src={featuredPost.image}
+                    alt={featuredPost.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.classList.add('bg-red-100', 'flex', 'items-center', 'justify-center');
+                        const fallbackEl = document.createElement('span');
+                        fallbackEl.className = 'text-8xl font-bold text-red-500';
+                        fallbackEl.textContent = featuredPost.title && featuredPost.title.length > 0 
+                          ? featuredPost.title.charAt(0).toUpperCase() 
+                          : 'B';
+                        parent.appendChild(fallbackEl);
+                      }
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-full bg-red-100 flex items-center justify-center">
+                  <span className="text-8xl font-bold text-red-500">
+                    {featuredPost.title && featuredPost.title.length > 0 
+                      ? featuredPost.title.charAt(0).toUpperCase() 
+                      : 'B'}
+                  </span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent">
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <span className="text-red-500 bg-white px-4 py-1 rounded-full text-sm font-semibold">
@@ -151,18 +166,6 @@ export default function Blog() {
           </motion.div>
         )}
 
-        {/* Categories */}
-        <div className="flex flex-wrap gap-4 mb-12">
-          {categories.map((category) => (
-            <button
-              key={category}
-              className="px-6 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.map((post, index) => (
@@ -173,11 +176,36 @@ export default function Blog() {
               transition={{ duration: 0.5, delay: index * 0.2 }}
               className="bg-white rounded-lg overflow-hidden shadow-lg"
             >
-              <img
-                src={post.image}
-                alt={post.title}
-                className="w-full h-48 object-cover"
-              />
+              {post.image ? (
+                <div className="w-full h-48">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.classList.add('bg-red-100', 'flex', 'items-center', 'justify-center');
+                        const fallbackEl = document.createElement('span');
+                        fallbackEl.className = 'text-4xl font-bold text-red-500';
+                        fallbackEl.textContent = post.title && post.title.length > 0 
+                          ? post.title.charAt(0).toUpperCase() 
+                          : 'B';
+                        parent.appendChild(fallbackEl);
+                      }
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-48 bg-red-100 flex items-center justify-center">
+                  <span className="text-4xl font-bold text-red-500">
+                    {post.title && post.title.length > 0 
+                      ? post.title.charAt(0).toUpperCase() 
+                      : 'B'}
+                  </span>
+                </div>
+              )}
               <div className="p-6">
                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
                   <div className="flex items-center">

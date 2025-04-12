@@ -108,46 +108,67 @@ export default function BlogPost() {
           </div>
         </motion.div>
         
-        {/* Featured Image */}
+        {/* Featured Image - show image or first character placeholder */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
           className="mb-12"
         >
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full h-auto rounded-xl"
-          />
-        </motion.div>
-        
-        {/* Post Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="prose prose-lg max-w-none"
-        >
-          <h2 className="text-2xl font-semibold mb-4">{post.subtitle}</h2>
-          <p className="mb-6">{post.content}</p>
-          
-          {/* Video Section (if available) */}
-          {post.videoUrl && (
-            <div className="my-8">
-              <h3 className="text-xl font-semibold mb-4">Watch the Video</h3>
-              <div className="relative pt-[56.25%] rounded-lg overflow-hidden">
-                <iframe
-                  src={post.videoUrl}
-                  title={post.title}
-                  className="absolute inset-0 w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
+          {post.image ? (
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-auto rounded-xl"
+            />
+          ) : (
+            <div className="w-full h-[300px] bg-red-100 flex items-center justify-center rounded-xl">
+              <span className="text-8xl font-bold text-red-500">
+                {post.title && post.title.length > 0 
+                  ? post.title.charAt(0).toUpperCase() 
+                  : 'B'}
+              </span>
             </div>
           )}
         </motion.div>
+        
+        {/* Post Content - only show if content exists */}
+        {post.content ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="prose prose-lg max-w-none"
+          >
+            <h2 className="text-2xl font-semibold mb-4">{post.subtitle}</h2>
+            <p className="mb-6">{post.content}</p>
+            
+            {/* Video Section (if available) */}
+            {post.videoUrl && (
+              <div className="my-8">
+                <h3 className="text-xl font-semibold mb-4">Watch the Video</h3>
+                <div className="relative pt-[56.25%] rounded-lg overflow-hidden">
+                  <iframe
+                    src={post.videoUrl}
+                    title={post.title}
+                    className="absolute inset-0 w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="prose prose-lg max-w-none text-center"
+          >
+            <p className="mb-6 text-gray-500">No story found</p>
+          </motion.div>
+        )}
         
         {/* Related Posts Section */}
         <motion.div
@@ -169,11 +190,21 @@ export default function BlogPost() {
                 >
                   <div className="bg-white rounded-lg overflow-hidden shadow-lg">
                     <div className="h-48 overflow-hidden">
-                      <img
-                        src={relatedPost.image}
-                        alt={relatedPost.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
+                      {relatedPost.image ? (
+                        <img
+                          src={relatedPost.image}
+                          alt={relatedPost.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-red-100 flex items-center justify-center">
+                          <span className="text-4xl font-bold text-red-500">
+                            {relatedPost.title && relatedPost.title.length > 0 
+                              ? relatedPost.title.charAt(0).toUpperCase() 
+                              : 'B'}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="p-6">
                       <h3 className="text-xl font-semibold mb-2 group-hover:text-red-500 transition-colors">

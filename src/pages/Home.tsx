@@ -125,63 +125,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Story Section */}
-      <section className="py-20 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Hero Section with Image */}
-          <div className="relative rounded-xl overflow-hidden mb-16 h-96">
-            <div 
-              className="absolute inset-0 z-0"
-              style={{
-                backgroundImage: `url('${siteContent?.story?.hero?.image}')`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              <div className="absolute inset-0 bg-black bg-opacity-60"></div>
-            </div>
-            <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="text-5xl font-bold mb-6">{siteContent?.story?.hero?.title || "Our Story"}</h2>
-                <p className="text-xl max-w-3xl mx-auto">
-                  {siteContent?.story?.hero?.description || "Take a journey through our culinary process"}
-                </p>
-              </motion.div>
-            </div>
-          </div>
-          
-          {/* Values Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-            {siteContent?.story?.values?.map((value: any, index: number) => {
-              // Determine which icon to use based on the icon name in the value
-              let IconComponent = UtensilsCrossed;
-              if (value.icon === "Heart") IconComponent = Heart;
-              else if (value.icon === "Users") IconComponent = Users;
-              
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.2 }}
-                  className="text-center p-6 bg-gray-800 rounded-lg"
-                >
-                  <div className="bg-red-500 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <IconComponent className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{value.title}</h3>
-                  <p className="text-gray-300">{value.description}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* Featured Menu Items */}
       <section className="py-20 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
