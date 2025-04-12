@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingCart, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Info, Tag, Box, Utensils, AlertTriangle, Heart } from 'lucide-react';
 import { useAppDispatch, useAppSelector, addItem, CartItem, fetchMenuRequest, MenuItem } from '../shared/redux';
 import { useEffect } from 'react';
 
@@ -40,9 +40,9 @@ export default function ProductDetail() {
                     <div className="h-10 w-32 bg-red-100 rounded-full animate-pulse mb-8"></div>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        {/* Related Products skeleton on LHS */}
+                        {/* You May Also Like skeleton on LHS */}
                         <div className="md:col-span-1">
-                            <div className="h-6 w-32 bg-red-100 rounded animate-pulse mb-4"></div>
+                            <div className="h-6 w-48 bg-red-100 rounded animate-pulse mb-4"></div>
                             <div className="space-y-4">
                                 {[1, 2, 3, 4, 5].map((i) => (
                                     <div key={i} className="bg-white rounded-lg overflow-hidden shadow-sm">
@@ -71,15 +71,66 @@ export default function ProductDetail() {
                                     </div>
                                     <div className="h-4 w-full bg-red-100 rounded animate-pulse mb-2"></div>
                                     <div className="h-4 w-full bg-red-100 rounded animate-pulse mb-2"></div>
-                                    <div className="h-4 w-3/4 bg-red-100 rounded animate-pulse"></div>
+                                    <div className="h-4 w-3/4 bg-red-100 rounded animate-pulse mb-6"></div>
+                                    
+                                    {/* Add to cart button skeleton */}
+                                    <div className="w-full h-12 bg-red-100 rounded-full animate-pulse mb-6"></div>
                                 </div>
                                 <div className="md:w-1/2 mt-4 md:mt-0">
                                     <div className="w-full h-64 bg-red-100 rounded-lg animate-pulse"></div>
                                 </div>
                             </div>
 
-                            {/* Add to cart button skeleton */}
-                            <div className="w-full h-12 bg-red-100 rounded-full animate-pulse"></div>
+                            {/* Product Details section skeleton */}
+                            <div className="mb-8">
+                                <div className="flex items-center mb-4">
+                                    <div className="h-6 w-6 bg-red-100 rounded-full animate-pulse mr-2"></div>
+                                    <div className="h-6 w-32 bg-red-100 rounded animate-pulse"></div>
+                                </div>
+                                <div className="space-y-4">
+                                    {[1, 2, 3, 4].map((i) => (
+                                        <div key={i} className="border-b border-gray-100 pb-3">
+                                            <div className="flex items-center mb-1">
+                                                <div className="h-4 w-4 bg-red-100 rounded-full animate-pulse mr-2"></div>
+                                                <div className="h-4 w-24 bg-red-100 rounded animate-pulse"></div>
+                                            </div>
+                                            <div className="h-4 w-32 bg-red-100 rounded animate-pulse ml-6"></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Nutritional information section skeleton */}
+                            <div className="mb-8">
+                                <div className="flex items-center mb-4">
+                                    <div className="h-6 w-6 bg-red-100 rounded-full animate-pulse mr-2"></div>
+                                    <div className="h-6 w-48 bg-red-100 rounded animate-pulse"></div>
+                                </div>
+                                <div className="space-y-4">
+                                    {[1, 2].map((i) => (
+                                        <div key={i} className="border-b border-gray-100 pb-3">
+                                            <div className="flex items-center mb-1">
+                                                <div className="h-4 w-4 bg-red-100 rounded-full animate-pulse mr-2"></div>
+                                                <div className="h-4 w-24 bg-red-100 rounded animate-pulse"></div>
+                                            </div>
+                                            <div className="h-4 w-16 bg-red-100 rounded animate-pulse ml-6"></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Ingredients section skeleton */}
+                            <div className="mb-8">
+                                <div className="flex items-center mb-4">
+                                    <div className="h-6 w-6 bg-red-100 rounded-full animate-pulse mr-2"></div>
+                                    <div className="h-6 w-32 bg-red-100 rounded animate-pulse"></div>
+                                </div>
+                                <div className="flex flex-wrap gap-2 pl-6">
+                                    {[1, 2, 3].map((i) => (
+                                        <div key={i} className="h-8 w-20 bg-red-100 rounded-full animate-pulse"></div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -132,19 +183,46 @@ export default function ProductDetail() {
                 </button>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    {/* Related Products on LHS */}
+                    {/* You May Also Like section on LHS */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5 }}
                         className="md:col-span-1"
                     >
-                        <h2 className="text-xl font-semibold mb-4">Other Products</h2>
+                        <h2 className="text-xl font-semibold mb-4">You May Also Like</h2>
                         <div className="space-y-4">
-                            {items
-                                .filter(item => item.id.toString() !== productId)
-                                .slice(0, 5)
-                                .map(item => (
+                            {(() => {
+                                // Extract best combo SKU IDs from the product
+                                let recommendedSkuIds: string[] = [];
+                                
+                                if (product.best_combo && typeof product.best_combo === 'string') {
+                                    try {
+                                        const bestCombo = JSON.parse(product.best_combo);
+                                        if (bestCombo.best_combo_ids) {
+                                            recommendedSkuIds = bestCombo.best_combo_ids
+                                                .split(',')
+                                                .map((id: string) => id.trim());
+                                        }
+                                    } catch (e) {
+                                        // If parsing fails, use empty array
+                                        recommendedSkuIds = [];
+                                    }
+                                }
+                                
+                                // Find items matching the recommended SKU IDs
+                                let recommendedItems = items.filter(item => 
+                                    item.sku_id && recommendedSkuIds.includes(item.sku_id)
+                                );
+                                
+                                // If no recommended items found, show random items
+                                if (recommendedItems.length === 0) {
+                                    recommendedItems = items
+                                        .filter(item => item.id.toString() !== productId)
+                                        .slice(0, 5);
+                                }
+                                
+                                return recommendedItems.map(item => (
                                     <div 
                                         key={item.id} 
                                         className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
@@ -172,8 +250,8 @@ export default function ProductDetail() {
                                             </div>
                                         </div>
                                     </div>
-                                ))
-                            }
+                                ));
+                            })()}
                         </div>
                     </motion.div>
 
@@ -206,7 +284,15 @@ export default function ProductDetail() {
                                         </div>
                                     )}
                                 </div>
-                                <p className="text-gray-700">{product.description}</p>
+                                <p className="text-gray-700 mb-6">{product.description}</p>
+                                
+                                <button
+                                    className="w-full inline-flex items-center justify-center bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-colors mb-6"
+                                    onClick={() => handleAddToCart(product)}
+                                >
+                                    <ShoppingCart className="h-5 w-5 mr-2" />
+                                    Add to Cart
+                                </button>
                             </div>
                             <div className="md:w-1/2 mt-4 md:mt-0">
                                 <div className="relative rounded-lg overflow-hidden shadow-lg">
@@ -229,30 +315,178 @@ export default function ProductDetail() {
                             </div>
                         </div>
 
-                        {/* Nutritional information section */}
-                        {product.calories && (
-                            <div className="mb-8">
-                                <h2 className="text-xl font-semibold mb-4">Nutritional Information</h2>
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <div className="flex justify-between items-center border-b border-gray-200 py-2">
-                                        <span className="font-medium">Calories</span>
-                                        <span>{product.calories}</span>
+                        {/* Product Details section */}
+                        <div className="mb-8">
+                            <h2 className="text-xl font-semibold mb-4 flex items-center">
+                                <Info className="h-5 w-5 mr-2" />
+                                Product Details
+                            </h2>
+                            <div className="space-y-4">
+                                {product.category && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Tag className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Category</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.category}</div>
                                     </div>
-                                    {product.nutrients && (
-                                        <>
-                                            <div className="flex justify-between items-center border-b border-gray-200 py-2">
-                                                <span className="font-medium">Protein</span>
-                                                <span>{product.nutrients.protein}</span>
+                                )}
+                                {product.subCategory && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Tag className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Subcategory</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.subCategory}</div>
+                                    </div>
+                                )}
+                                {product.supplier && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Box className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Supplier</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.supplier}</div>
+                                    </div>
+                                )}
+                                {product.brand && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Box className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Brand</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.brand}</div>
+                                    </div>
+                                )}
+                                {product.unit && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Box className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Unit</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.unit}</div>
+                                    </div>
+                                )}
+                                {product.external_id && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Info className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">External ID</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.external_id}</div>
+                                    </div>
+                                )}
+                                {product.bar_code && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Info className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Bar Code</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.bar_code}</div>
+                                    </div>
+                                )}
+                                {product.appearance && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Info className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Appearance</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.appearance}</div>
+                                    </div>
+                                )}
+                                {product.serving && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Utensils className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Serving</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.serving}</div>
+                                    </div>
+                                )}
+                                {product.flavors && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Utensils className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Flavors</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.flavors}</div>
+                                    </div>
+                                )}
+                                {product.variations && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Box className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Variations</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.variations}</div>
+                                    </div>
+                                )}
+                                {product.comment && (
+                                    <div className="border-b border-gray-100 pb-3">
+                                        <div className="flex items-center mb-1">
+                                            <Info className="h-4 w-4 mr-2 text-gray-500" />
+                                            <span className="font-medium text-gray-700">Comments</span>
+                                        </div>
+                                        <div className="text-gray-900 pl-6">{product.comment}</div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Nutritional information section */}
+                        {(product.calories || (product.nutrients && Object.keys(product.nutrients).length > 0)) && (
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                                    <Utensils className="h-5 w-5 mr-2" />
+                                    Nutritional Information
+                                </h2>
+                                <div className="space-y-4">
+                                    {product.calories && (
+                                        <div className="border-b border-gray-100 pb-3">
+                                            <div className="flex items-center mb-1">
+                                                <Utensils className="h-4 w-4 mr-2 text-gray-500" />
+                                                <span className="font-medium text-gray-700">Calories</span>
                                             </div>
-                                            <div className="flex justify-between items-center border-b border-gray-200 py-2">
-                                                <span className="font-medium">Carbs</span>
-                                                <span>{product.nutrients.carbs}</span>
+                                            <div className="text-gray-900 pl-6">{product.calories}</div>
+                                        </div>
+                                    )}
+                                    {product.nutrients && Object.entries(product.nutrients).map(([key, value]) => (
+                                        value && (
+                                            <div key={key} className="border-b border-gray-100 pb-3">
+                                                <div className="flex items-center mb-1">
+                                                    <Utensils className="h-4 w-4 mr-2 text-gray-500" />
+                                                    <span className="font-medium text-gray-700">{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                                                </div>
+                                                <div className="text-gray-900 pl-6">{value}</div>
                                             </div>
-                                            <div className="flex justify-between items-center border-b border-gray-200 py-2">
-                                                <span className="font-medium">Fat</span>
-                                                <span>{product.nutrients.fat}</span>
-                                            </div>
-                                        </>
+                                        )
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Dietary Information */}
+                        {product.dietary && Object.values(product.dietary).some(value => value) && (
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                                    <Tag className="h-5 w-5 mr-2" />
+                                    Dietary Information
+                                </h2>
+                                <div className="flex flex-wrap gap-2 pl-6">
+                                    {product.dietary.isVegan && (
+                                        <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+                                            Vegan
+                                        </span>
+                                    )}
+                                    {product.dietary.isVegetarian && (
+                                        <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+                                            Vegetarian
+                                        </span>
+                                    )}
+                                    {product.dietary.isGlutenFree && (
+                                        <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
+                                            Gluten Free
+                                        </span>
                                     )}
                                 </div>
                             </div>
@@ -261,8 +495,11 @@ export default function ProductDetail() {
                         {/* Ingredients section */}
                         {product.ingredients && product.ingredients.length > 0 && (
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold mb-4">Ingredients</h2>
-                                <div className="flex flex-wrap gap-2">
+                                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                                    <Box className="h-5 w-5 mr-2" />
+                                    Ingredients
+                                </h2>
+                                <div className="flex flex-wrap gap-2 pl-6">
                                     {product.ingredients.map((ingredient, index) => (
                                         <span 
                                             key={index} 
@@ -278,8 +515,11 @@ export default function ProductDetail() {
                         {/* Allergens section */}
                         {product.allergens && product.allergens.length > 0 && (
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold mb-4">Allergens</h2>
-                                <div className="flex flex-wrap gap-2">
+                                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                                    <AlertTriangle className="h-5 w-5 mr-2" />
+                                    Allergens
+                                </h2>
+                                <div className="flex flex-wrap gap-2 pl-6">
                                     {product.allergens.map((allergen, index) => (
                                         <span 
                                             key={index} 
@@ -292,28 +532,22 @@ export default function ProductDetail() {
                             </div>
                         )}
 
-                        <button
-                            className="w-full inline-flex items-center justify-center bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-colors mb-8"
-                            onClick={() => handleAddToCart(product)}
-                        >
-                            <ShoppingCart className="h-5 w-5 mr-2" />
-                            Add to Cart
-                        </button>
 
                         {/* Pairings section */}
                         {product.pairings && product.pairings.length > 0 && (
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold mb-4">Perfect Pairings</h2>
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <ul className="space-y-2">
-                                        {product.pairings.map((pairing, index) => (
-                                            <li key={index} className="flex items-center">
-                                                <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                                                {pairing}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
+                                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                                    <Heart className="h-5 w-5 mr-2" />
+                                    Perfect Pairings
+                                </h2>
+                                <ul className="space-y-3 pl-6">
+                                    {product.pairings.map((pairing, index) => (
+                                        <li key={index} className="flex items-center">
+                                            <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                            <span className="text-gray-700">{pairing}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         )}
                     </motion.div>
